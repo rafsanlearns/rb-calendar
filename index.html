@@ -1,695 +1,706 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RB Calendar — by Rafsan</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0f1e'/%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25' r='75%25'%3E%3Cstop offset='0%25' stop-color='%23fdf1c8'/%3E%3Cstop offset='55%25' stop-color='%23e8b854'/%3E%3Cstop offset='100%25' stop-color='%23a5731f'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='52' r='30' fill='url(%23g)'/%3E%3Ccircle cx='62' cy='41' r='26' fill='%230a0f1e'/%3E%3Ccircle cx='73' cy='27' r='2' fill='%23fdf1c8'/%3E%3Ccircle cx='80' cy='38' r='1.2' fill='%23fdf1c8'/%3E%3C/svg%3E">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0a0f1e">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg-0:#0a0f1e;
-    --bg-1:#0e1626;
-    --bg-2:#141f36;
-    --panel:#182548;
-    --panel-2:#1c2b52;
-    --line: rgba(255,255,255,0.08);
-    --ink:#eef2fb;
-    --ink-dim:#9aa7c7;
-    --gold:#e8b854;
-    --gold-soft:#f3d68f;
-    --red:#e2564a;
-    --green:#4fae6d;
-    --blue:#6fa3e0;
-    --radius:16px;
-    --shadow: 0 10px 30px rgba(0,0,0,0.45);
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    min-height:100vh;
-    background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(232,184,84,0.10), transparent 60%),
-      radial-gradient(900px 500px at 110% 10%, rgba(111,163,224,0.12), transparent 55%),
-      linear-gradient(180deg, var(--bg-0), var(--bg-1) 40%, var(--bg-2));
-    color:var(--ink);
-    font-family:'Inter',system-ui,sans-serif;
-    position:relative;
-    overflow-x:hidden;
-  }
-  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
-  .star{position:absolute;background:#fff;border-radius:50%;opacity:0.5;animation:twinkle 4s ease-in-out infinite;}
-  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.8}}
-  @media (prefers-reduced-motion: reduce){ .star{animation:none;opacity:.35;} }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RB Calendar</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d1117">
+    <style>
+        :root {
+            --bg-main: #0d1117;
+            --bg-card: #161b22;
+            --bg-hover: #21262d;
+            --accent: #58a6ff;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --holiday-red: #ff7b72;
+            --weekend-color: #f0883e;
+            --border: #30363d;
+            --bn-color: #7ee787;
+            --ar-color: #d2a8ff;
+        }
 
-  .app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:22px 16px 60px;}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  /* Header / logo */
-  header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
-  .brand{display:flex;align-items:center;gap:14px;}
-  .moon-badge{
-    width:58px;height:58px;flex:none;
-    filter:drop-shadow(0 0 14px rgba(232,184,84,0.65));
-  }
-  .moon-badge svg{width:100%;height:100%;display:block;}
-  .brand-text .rb{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:34px;letter-spacing:2px;line-height:1;color:var(--ink);}
-  .brand-text .by{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-soft);margin-top:3px;}
-  .brand-text .tagline{font-size:11px;color:var(--ink-dim);margin-top:2px;}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-  .top-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-  select, input[type="text"], input[type="number"]{
-    background:var(--panel); color:var(--ink); border:1px solid var(--line);
-    border-radius:10px; padding:9px 12px; font-size:13px; font-family:inherit;
-  }
-  select:focus, input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+        header {
+            background-color: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-  nav.tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
-  nav.tabs button{
-    background:var(--panel); color:var(--ink-dim); border:1px solid var(--line);
-    padding:9px 16px; border-radius:999px; font-size:13px; cursor:pointer; font-weight:600;
-    transition:all .15s ease;
-  }
-  nav.tabs button.active{background:linear-gradient(135deg, var(--gold), #c9932f); color:#1a1204; border-color:transparent;}
-  nav.tabs button:hover:not(.active){color:var(--ink); border-color:var(--gold);}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-  .panel{background:linear-gradient(180deg, var(--panel), var(--panel-2)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px;}
+        .logo {
+            font-size: 32px;
+            filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.4));
+        }
 
-  /* Calendar controls row */
-  .cal-controls{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
-  .month-nav{display:flex; align-items:center; gap:10px;}
-  .month-nav button{background:var(--panel-2); border:1px solid var(--line); color:var(--ink); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:16px;}
-  .month-nav button:hover{border-color:var(--gold); color:var(--gold-soft);}
-  .month-title{font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; min-width:220px; text-align:center;}
-  .sub-date-line{font-size:12px; color:var(--ink-dim); text-align:center; margin-top:2px;}
+        .title-group h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
 
-  .legend{display:flex; gap:14px; font-size:11px; color:var(--ink-dim); flex-wrap:wrap;}
-  .legend span{display:inline-flex; align-items:center; gap:5px;}
-  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
-  .dot.bn{background:var(--blue);} .dot.ar{background:var(--green);} .dot.hol{background:var(--red);}
+        .title-group .author {
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: 500;
+        }
 
-  /* Grid */
-  .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px;}
-  .wd{text-align:center; font-size:12px; letter-spacing:1px; color:var(--ink-dim); padding:6px 0; font-weight:700; text-transform:uppercase;}
-  .wd.weekend{color:var(--red);}
-  .cell{
-    background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:12px;
-    min-height:84px; padding:8px; position:relative; transition:background .15s;
-  }
-  .cell.out{opacity:0.28;}
-  .cell.today{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold) inset;}
-  .cell:hover{background:rgba(255,255,255,0.05);}
-  .g-num{font-size:19px; font-weight:700;}
-  .g-num.holiday, .wd.weekend ~ .g-num{color:var(--red);}
-  .g-num.weekend{color:var(--red);}
-  .sub-nums{display:flex; gap:8px; margin-top:4px; font-size:11px;}
-  .sub-nums .bn{color:var(--blue); font-family:'Noto Sans Bengali', sans-serif;}
-  .sub-nums .ar{color:var(--green);}
-  .hol-name{font-size:9.5px; color:var(--gold-soft); margin-top:4px; line-height:1.2; display:block;}
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
-  /* Holidays list tab */
-  .hol-list{display:flex; flex-direction:column; gap:8px;}
-  .hol-row{display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:10px; padding:10px 14px;}
-  .hol-date{font-weight:700; color:var(--gold-soft); min-width:110px; font-size:13px;}
-  .hol-tag{font-size:10px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--ink-dim);}
-  .hol-tag.national{color:var(--red); border-color:var(--red);}
-  .hol-tag.religious{color:var(--green); border-color:var(--green);}
-  .hol-tag.cultural{color:var(--blue); border-color:var(--blue);}
+        select, button {
+            background-color: #21262d;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s;
+        }
 
-  /* World chart */
-  .world-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:14px;}
-  .country-card{background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:12px; padding:14px;}
-  .country-card h4{margin:0 0 8px; font-family:'Cormorant Garamond',serif; font-size:19px; color:var(--gold-soft);}
-  .country-card ul{margin:0; padding-left:16px; font-size:12.5px; color:var(--ink-dim); line-height:1.7;}
+        select:focus, button:hover {
+            border-color: var(--accent);
+        }
 
-  footer{text-align:center; color:var(--ink-dim); font-size:11px; margin-top:30px; line-height:1.7;}
-  footer a{color:var(--gold-soft); text-decoration:none;}
+        .btn-today {
+            background-color: var(--accent);
+            color: #0d1117;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
 
-  .note{font-size:11.5px; color:var(--ink-dim); background:rgba(255,255,255,0.03); border:1px dashed var(--line); border-radius:10px; padding:10px 12px; margin-bottom:14px;}
-  .live-badge{font-size:11px; color:var(--ink-dim); margin:-8px 0 16px; display:flex; justify-content:flex-end;}
-  .live-badge .on{color:var(--green);}
-  .live-badge .off{color:var(--gold-soft);}
-  .search-wrap{position:relative;}
-  .search-results{position:absolute; top:100%; left:0; right:0; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; margin-top:4px; max-height:220px; overflow-y:auto; z-index:20; box-shadow:var(--shadow);}
-  .search-results div{padding:8px 12px; font-size:13px; cursor:pointer;}
-  .search-results div:hover{background:rgba(232,184,84,0.15);}
-  @media (max-width:640px){
-    .month-title{font-size:22px; min-width:auto;}
-    .cell{min-height:64px;}
-    .g-num{font-size:15px;}
-  }
-</style>
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 15px;
+            padding: 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calendar-section {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+
+        .month-header h2 {
+            font-size: 22px;
+            color: #ffffff;
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .nav-btn {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #21262d;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            flex: 1;
+        }
+
+        .day-cell {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            min-height: 90px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.1s, border-color 0.2s;
+        }
+
+        .day-cell:hover {
+            border-color: var(--accent);
+            background-color: var(--bg-hover);
+        }
+
+        .day-cell.today {
+            border: 2px solid var(--accent);
+            background-color: rgba(88, 166, 255, 0.08);
+        }
+
+        .day-cell.other-month {
+            opacity: 0.35;
+        }
+
+        .day-header-num {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .eng-num {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .day-cell.weekend .eng-num {
+            color: var(--weekend-color);
+        }
+
+        .sub-dates {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .bn-date { color: var(--bn-color); }
+        .ar-date { color: var(--ar-color); }
+
+        .holiday-tag {
+            font-size: 10px;
+            background-color: rgba(255, 123, 114, 0.15);
+            color: var(--holiday-red);
+            border-left: 3px solid var(--holiday-red);
+            padding: 2px 4px;
+            border-radius: 2px;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            max-height: 650px;
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .holiday-list {
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 5px;
+        }
+
+        .holiday-item {
+            background: #21262d;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .holiday-item.national {
+            border-left-color: var(--holiday-red);
+        }
+
+        .holiday-item .date-str {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .holiday-item .name-str {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .legend {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+    </style>
 </head>
 <body>
-<div id="stars"></div>
-<div id="root"><p style="text-align:center;color:#9aa7c7;font-family:sans-serif;padding:40px;">Loading RB Calendar…</p></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-
-<script type="text/babel" data-presets="react">
-const {useState, useMemo, useEffect, useRef} = React;
-
-/* ============================================================
-   1. STARFIELD BACKGROUND
-   ============================================================ */
-(function initStars(){
-  const c = document.getElementById('stars');
-  const n = 90;
-  for(let i=0;i<n;i++){
-    const s = document.createElement('div');
-    s.className='star';
-    const size = Math.random()*2+1;
-    s.style.width = size+'px';
-    s.style.height = size+'px';
-    s.style.left = Math.random()*100+'%';
-    s.style.top = Math.random()*100+'%';
-    s.style.animationDelay = (Math.random()*4)+'s';
-    c.appendChild(s);
-  }
-})();
-
-/* ============================================================
-   2. LANGUAGE DICTIONARY (English + 10 world languages)
-   ============================================================ */
-const LANGS = {
-  en:{name:"English", month:"Month", year:"Year", holidays:"Holidays", world:"World Holidays",
-      searchCountry:"Search your country…", selectLang:"Language", weekly:"Weekly off",
-      today:"Today", national:"National", religious:"Religious", cultural:"Cultural",
-      noData:"Holiday data for this country isn't loaded yet — showing weekends only.",
-      approxNote:"Bengali & Hijri dates are calculated astronomically and may shift ±1 day around religious events, which follow real moon sighting.",
-      selectYear:"Select year (2014–2060)"},
-  bn:{name:"বাংলা", month:"মাস", year:"বছর", holidays:"ছুটির দিন", world:"বিশ্বের ছুটি",
-      searchCountry:"আপনার দেশ খুঁজুন…", selectLang:"ভাষা", weekly:"সাপ্তাহিক ছুটি",
-      today:"আজ", national:"জাতীয়", religious:"ধর্মীয়", cultural:"সাংস্কৃতিক",
-      noData:"এই দেশের ছুটির তথ্য এখনো যোগ করা হয়নি — শুধু সাপ্তাহিক ছুটি দেখানো হচ্ছে।",
-      approxNote:"বাংলা ও আরবি তারিখ গাণিতিকভাবে হিসাব করা হয়েছে; চাঁদ দেখার উপর নির্ভরশীল দিনগুলো ±১ দিন পরিবর্তিত হতে পারে।",
-      selectYear:"সাল নির্বাচন করুন (২০১৪–২০৬০)"},
-  ar:{name:"العربية", month:"شهر", year:"سنة", holidays:"العطلات", world:"عطلات العالم",
-      searchCountry:"ابحث عن بلدك…", selectLang:"اللغة", weekly:"عطلة أسبوعية",
-      today:"اليوم", national:"وطني", religious:"ديني", cultural:"ثقافي",
-      noData:"بيانات العطلات لهذا البلد غير متوفرة بعد.", approxNote:"التواريخ الهجرية تقريبية.",
-      selectYear:"اختر السنة (2014–2060)"},
-  hi:{name:"हिन्दी", month:"महीना", year:"वर्ष", holidays:"छुट्टियाँ", world:"विश्व की छुट्टियाँ",
-      searchCountry:"अपना देश खोजें…", selectLang:"भाषा", weekly:"साप्ताहिक अवकाश",
-      today:"आज", national:"राष्ट्रीय", religious:"धार्मिक", cultural:"सांस्कृतिक",
-      noData:"इस देश का डेटा अभी उपलब्ध नहीं है।", approxNote:"तिथियाँ अनुमानित हैं।",
-      selectYear:"वर्ष चुनें (2014–2060)"},
-  ur:{name:"اردو", month:"مہینہ", year:"سال", holidays:"تعطیلات", world:"دنیا کی تعطیلات",
-      searchCountry:"اپنا ملک تلاش کریں…", selectLang:"زبان", weekly:"ہفتہ وار چھٹی",
-      today:"آج", national:"قومی", religious:"مذہبی", cultural:"ثقافتی",
-      noData:"اس ملک کا ڈیٹا ابھی دستیاب نہیں۔", approxNote:"تاریخیں تخمینی ہیں۔",
-      selectYear:"سال منتخب کریں (2014–2060)"},
-  fr:{name:"Français", month:"Mois", year:"Année", holidays:"Jours fériés", world:"Jours fériés mondiaux",
-      searchCountry:"Cherchez votre pays…", selectLang:"Langue", weekly:"Repos hebdomadaire",
-      today:"Aujourd'hui", national:"National", religious:"Religieux", cultural:"Culturel",
-      noData:"Données non disponibles pour ce pays — week-ends affichés seulement.",
-      approxNote:"Les dates bengalie et hégirienne sont calculées et peuvent varier de ±1 jour.",
-      selectYear:"Choisir l'année (2014–2060)"},
-  es:{name:"Español", month:"Mes", year:"Año", holidays:"Días festivos", world:"Festivos del mundo",
-      searchCountry:"Busca tu país…", selectLang:"Idioma", weekly:"Descanso semanal",
-      today:"Hoy", national:"Nacional", religious:"Religioso", cultural:"Cultural",
-      noData:"Datos no disponibles para este país todavía.",
-      approxNote:"Las fechas bengalí e hijri son calculadas y pueden variar ±1 día.",
-      selectYear:"Selecciona el año (2014–2060)"},
-  zh:{name:"中文", month:"月", year:"年", holidays:"假期", world:"世界假期",
-      searchCountry:"搜索您的国家…", selectLang:"语言", weekly:"每周休息日",
-      today:"今天", national:"国定", religious:"宗教", cultural:"文化",
-      noData:"该国家的数据尚未加载，仅显示周末。", approxNote:"孟加拉历和伊斯兰历为推算日期，可能有±1天误差。",
-      selectYear:"选择年份 (2014–2060)"},
-  ru:{name:"Русский", month:"Месяц", year:"Год", holidays:"Праздники", world:"Праздники мира",
-      searchCountry:"Найдите свою страну…", selectLang:"Язык", weekly:"Выходной день",
-      today:"Сегодня", national:"Национальный", religious:"Религиозный", cultural:"Культурный",
-      noData:"Данные для этой страны пока недоступны.", approxNote:"Даты бенгальского и исламского календарей приблизительны.",
-      selectYear:"Выберите год (2014–2060)"},
-  id:{name:"Indonesia", month:"Bulan", year:"Tahun", holidays:"Hari Libur", world:"Libur Dunia",
-      searchCountry:"Cari negara Anda…", selectLang:"Bahasa", weekly:"Libur mingguan",
-      today:"Hari ini", national:"Nasional", religious:"Keagamaan", cultural:"Budaya",
-      noData:"Data untuk negara ini belum tersedia.", approxNote:"Tanggal Bengali & Hijriah bersifat perhitungan, bisa berbeda ±1 hari.",
-      selectYear:"Pilih tahun (2014–2060)"},
-  tr:{name:"Türkçe", month:"Ay", year:"Yıl", holidays:"Tatiller", world:"Dünya Tatilleri",
-      searchCountry:"Ülkenizi arayın…", selectLang:"Dil", weekly:"Haftalık tatil",
-      today:"Bugün", national:"Ulusal", religious:"Dini", cultural:"Kültürel",
-      noData:"Bu ülke için veri henüz eklenmedi.", approxNote:"Bengal ve Hicri tarihler hesaplamalıdır, ±1 gün kayabilir.",
-      selectYear:"Yıl seçin (2014–2060)"},
-};
-
-/* ============================================================
-   3. DATE ENGINES — Bengali (reformed calendar) & Hijri (tabular)
-   ============================================================ */
-const BN_MONTHS = ["Boishakh","Joishtho","Ashar","Srabon","Bhadro","Ashwin","Kartik","Ogrohayon","Poush","Magh","Falgun","Choitro"];
-const BN_MONTHS_BN = ["বৈশাখ","জ্যৈষ্ঠ","আষাঢ়","শ্রাবণ","ভাদ্র","আশ্বিন","কার্তিক","অগ্রহায়ণ","পৌষ","মাঘ","ফাল্গুন","চৈত্র"];
-const BN_DIGITS = ["০","১","২","৩","৪","৫","৬","৭","৮","৯"];
-function toBnDigits(num){ return String(num).split('').map(d=> /[0-9]/.test(d)? BN_DIGITS[+d] : d).join(''); }
-
-function isGregLeap(y){ return (y%4===0 && y%100!==0) || y%400===0; }
-
-// Approximate reformed Bangla calendar: Pohela Boishakh = 14 April every Gregorian year.
-// Months 1-5 => 31 days, months 6-11 => 30 days, month 12 (Choitro) => 30 or 31 (leap adj).
-function gregorianToBengali(date){
-  const y = date.getFullYear(), m = date.getMonth(), d = date.getDate();
-  // Bengali new year starts Apr 14. If date is before Apr 14, it belongs to the Bengali year that started previous April.
-  const newYearThisYear = new Date(y,3,14); // Apr 14
-  let bnYearStartGregYear = (date >= newYearThisYear) ? y : y-1;
-  const bnYear = bnYearStartGregYear - 593; // 2024-593=1431 approx (actual offset ~593/594)
-  const start = new Date(bnYearStartGregYear,3,14);
-  let dayOfBnYear = Math.floor((date - start)/86400000) + 1; // 1-indexed
-  const leapAdj = isGregLeap(bnYearStartGregYear+1) ? 1 : 0; // Falgun gets extra day before a Greg leap Feb
-  const lengths = [31,31,31,31,31,30,30,30,30,30,30+leapAdj,30];
-  let mi=0, rem=dayOfBnYear;
-  while(mi<12 && rem>lengths[mi]){ rem -= lengths[mi]; mi++; }
-  if(mi>11) mi=11;
-  return {year:bnYear, monthIndex:mi, day:rem, monthName:BN_MONTHS[mi], monthNameBn:BN_MONTHS_BN[mi]};
-}
-
-const HIJRI_MONTHS = ["Muharram","Safar","Rabi' al-Awwal","Rabi' al-Thani","Jumada al-Awwal","Jumada al-Thani","Rajab","Sha'ban","Ramadan","Shawwal","Dhu al-Qi'dah","Dhu al-Hijjah"];
-const HIJRI_MONTHS_AR = ["محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
-// Tabular Islamic calendar (civil), via Julian Day Number — standard algorithm, ±1 day vs real moon sighting.
-function gregorianToJDN(y,m,d){
-  const a = Math.floor((14-m)/12);
-  const yy = y+4800-a;
-  const mm = m+12*a-3;
-  return d + Math.floor((153*mm+2)/5) + 365*yy + Math.floor(yy/4) - Math.floor(yy/100) + Math.floor(yy/400) - 32045;
-}
-function gregorianToHijri(date){
-  const jdn = gregorianToJDN(date.getFullYear(), date.getMonth()+1, date.getDate());
-  const islamicEpoch = 1948440; // JDN of 1 Muharram 1 AH (civil, Friday-based)
-  let l = jdn - islamicEpoch + 10632;
-  const n = Math.floor((l-1)/10631);
-  l = l - 10631*n + 354;
-  const j = (Math.floor((10985-l)/5316))*(Math.floor((50*l)/17719)) + (Math.floor(l/5670))*(Math.floor((43*l)/15238));
-  l = l - (Math.floor((30-j)/15))*(Math.floor((17719*j)/50)) - (Math.floor(j/16))*(Math.floor((15238*j)/43)) + 29;
-  const month = Math.floor((24*l)/709);
-  const day = l - Math.floor((709*month)/24);
-  const year = 30*n + j - 30;
-  const mi = Math.max(0, Math.min(11, month-1));
-  return {year, monthIndex:mi, day, monthName:HIJRI_MONTHS[mi], monthNameAr:HIJRI_MONTHS_AR[mi]};
-}
-
-/* ============================================================
-   4. HOLIDAY DATA
-   ============================================================ */
-// Bangladesh — recurring fixed-date holidays (apply every year in range)
-const BD_FIXED = [
-  {m:2,d:21,name:"International Mother Language Day",type:"national"},
-  {m:3,d:26,name:"Independence Day",type:"national"},
-  {m:4,d:14,name:"Pohela Boishakh (Bengali New Year)",type:"cultural"},
-  {m:5,d:1,name:"May Day",type:"national"},
-  {m:8,d:5,name:"July Uprising Day",type:"national"},
-  {m:8,d:15,name:"National Mourning Day",type:"national"},
-  {m:12,d:16,name:"Victory Day",type:"national"},
-  {m:12,d:25,name:"Christmas Day",type:"religious"},
-];
-// Islamic (moon-dependent) holidays — best-available estimated dates for a working range of years.
-// Marked with * per convention: subject to moon sighting.
-const BD_ISLAMIC = {
-  2024:[{m:3,d:11,name:"*Start of Ramadan"},{m:4,d:11,name:"*Eid-ul-Fitr"},{m:6,d:17,name:"*Eid-ul-Adha"},{m:7,d:17,name:"*Ashura"},{m:9,d:16,name:"*Eid-e-Milad-un-Nabi"}],
-  2025:[{m:3,d:1,name:"*Start of Ramadan"},{m:3,d:31,name:"*Eid-ul-Fitr"},{m:6,d:7,name:"*Eid-ul-Adha"},{m:7,d:6,name:"*Ashura"},{m:9,d:5,name:"*Eid-e-Milad-un-Nabi"}],
-  2026:[{m:2,d:19,name:"*Start of Ramadan"},{m:3,d:20,name:"*Eid-ul-Fitr"},{m:5,d:27,name:"*Eid-ul-Adha"},{m:6,d:25,name:"*Ashura"},{m:8,d:26,name:"*Eid-e-Milad-un-Nabi (SM)"}],
-  2027:[{m:2,d:9,name:"*Start of Ramadan"},{m:3,d:10,name:"*Eid-ul-Fitr"},{m:5,d:16,name:"*Eid-ul-Adha"},{m:6,d:15,name:"*Ashura"},{m:8,d:15,name:"*Eid-e-Milad-un-Nabi"}],
-};
-
-function getBdHolidaysForYear(y){
-  const fixed = BD_FIXED.map(h=>({...h, y, type:h.type}));
-  const islamic = (BD_ISLAMIC[y]||[]).map(h=>({...h, y, type:"religious"}));
-  return [...fixed, ...islamic].sort((a,b)=> a.m-b.m || a.d-b.d);
-}
-
-// Other countries — sample recurring fixed-date national holidays (extendable dataset).
-const WORLD_HOLIDAYS = {
-  US:{flag:"🇺🇸", name:"United States", weekend:[0,6], list:[{m:1,d:1,name:"New Year's Day"},{m:7,d:4,name:"Independence Day"},{m:11,d:11,name:"Veterans Day"},{m:12,d:25,name:"Christmas Day"}]},
-  GB:{flag:"🇬🇧", name:"United Kingdom", weekend:[0,6], list:[{m:1,d:1,name:"New Year's Day"},{m:12,d:25,name:"Christmas Day"},{m:12,d:26,name:"Boxing Day"}]},
-  IN:{flag:"🇮🇳", name:"India", weekend:[0], list:[{m:1,d:26,name:"Republic Day"},{m:8,d:15,name:"Independence Day"},{m:10,d:2,name:"Gandhi Jayanti"}]},
-  PK:{flag:"🇵🇰", name:"Pakistan", weekend:[0], list:[{m:3,d:23,name:"Pakistan Day"},{m:8,d:14,name:"Independence Day"},{m:12,d:25,name:"Quaid-e-Azam Day"}]},
-  SA:{flag:"🇸🇦", name:"Saudi Arabia", weekend:[5,6], list:[{m:9,d:23,name:"Saudi National Day"}]},
-  AE:{flag:"🇦🇪", name:"UAE", weekend:[5,6], list:[{m:12,d:2,name:"National Day"}]},
-  MY:{flag:"🇲🇾", name:"Malaysia", weekend:[5,6], list:[{m:8,d:31,name:"Merdeka Day"}]},
-  ID:{flag:"🇮🇩", name:"Indonesia", weekend:[0], list:[{m:8,d:17,name:"Independence Day"}]},
-  FR:{flag:"🇫🇷", name:"France", weekend:[0,6], list:[{m:7,d:14,name:"Bastille Day"},{m:12,d:25,name:"Christmas Day"}]},
-  DE:{flag:"🇩🇪", name:"Germany", weekend:[0,6], list:[{m:10,d:3,name:"German Unity Day"},{m:12,d:25,name:"Christmas Day"}]},
-  ES:{flag:"🇪🇸", name:"Spain", weekend:[0,6], list:[{m:10,d:12,name:"National Day"},{m:12,d:25,name:"Christmas Day"}]},
-  CN:{flag:"🇨🇳", name:"China", weekend:[0,6], list:[{m:10,d:1,name:"National Day"},{m:1,d:1,name:"New Year's Day"}]},
-  RU:{flag:"🇷🇺", name:"Russia", weekend:[0,6], list:[{m:1,d:1,name:"New Year's Day"},{m:5,d:9,name:"Victory Day"}]},
-  TR:{flag:"🇹🇷", name:"Turkey", weekend:[0,6], list:[{m:10,d:29,name:"Republic Day"}]},
-  EG:{flag:"🇪🇬", name:"Egypt", weekend:[5,6], list:[{m:7,d:23,name:"Revolution Day"}]},
-  NG:{flag:"🇳🇬", name:"Nigeria", weekend:[0,6], list:[{m:10,d:1,name:"Independence Day"}]},
-  BR:{flag:"🇧🇷", name:"Brazil", weekend:[0,6], list:[{m:9,d:7,name:"Independence Day"},{m:12,d:25,name:"Christmas Day"}]},
-  CA:{flag:"🇨🇦", name:"Canada", weekend:[0,6], list:[{m:7,d:1,name:"Canada Day"},{m:12,d:25,name:"Christmas Day"}]},
-  AU:{flag:"🇦🇺", name:"Australia", weekend:[0,6], list:[{m:1,d:26,name:"Australia Day"},{m:12,d:25,name:"Christmas Day"}]},
-  JP:{flag:"🇯🇵", name:"Japan", weekend:[0,6], list:[{m:2,d:11,name:"National Foundation Day"},{m:5,d:3,name:"Constitution Day"}]},
-  BD:{flag:"🇧🇩", name:"Bangladesh", weekend:[5,6], list:BD_FIXED},
-};
-const ALL_COUNTRIES = Object.entries(WORLD_HOLIDAYS).map(([code,v])=>({code, name:v.name, flag:v.flag}))
-  .sort((a,b)=> a.name.localeCompare(b.name));
-
-/* ============================================================
-   4b. LIVE HOLIDAY SOURCE
-   When the app is opened online, it asks a public holiday
-   directory (date.nager.at, a free community-maintained holiday
-   database covering ~100 countries) for that country/year's real
-   holidays, and uses that instead of the bundled sample list.
-   If the device is offline, or the chosen country isn't in that
-   directory, the app falls back to the bundled data above —
-   quietly, with a small status badge showing which one is active.
-   ============================================================ */
-const LIVE_API = "https://date.nager.at/api/v3";
-async function fetchLiveCountries(){
-  try{
-    const res = await fetch(`${LIVE_API}/AvailableCountries`);
-    if(!res.ok) throw new Error("bad response");
-    const data = await res.json();
-    return data.map(c=>({code:c.countryCode, name:c.name, flag:"🌐"}));
-  }catch(e){ return null; }
-}
-async function fetchLiveHolidays(year, code){
-  try{
-    const res = await fetch(`${LIVE_API}/PublicHolidays/${year}/${code}`);
-    if(!res.ok) throw new Error("bad response");
-    const data = await res.json();
-    return data.map(h=>{
-      const d = new Date(h.date+"T00:00:00");
-      return {m:d.getMonth()+1, d:d.getDate(), name:h.localName || h.name, type:"national"};
-    });
-  }catch(e){ return null; }
-}
-
-/* ============================================================
-   5. WEEKDAY / MONTH NAME HELPERS
-   ============================================================ */
-const WD_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
-
-/* ============================================================
-   6. MAIN APP
-   ============================================================ */
-function App(){
-  const today = new Date();
-  const [lang, setLang] = useState("en");
-  const [country, setCountry] = useState("BD");
-  const [tab, setTab] = useState("month");
-  const [viewYear, setViewYear] = useState(today.getFullYear());
-  const [viewMonth, setViewMonth] = useState(today.getMonth());
-  const [countryQuery, setCountryQuery] = useState("");
-  const [showResults, setShowResults] = useState(false);
-  const [liveCountries, setLiveCountries] = useState(null); // full ~100-country list from the live API, once fetched
-  const [holidayCache, setHolidayCache] = useState({}); // key "CODE-YEAR" -> holiday array from the live API
-  const [liveStatus, setLiveStatus] = useState("loading"); // "loading" | "live" | "offline"
-  const t = LANGS[lang];
-  const isRtl = lang==="ar" || lang==="ur";
-
-  const countryInfo = WORLD_HOLIDAYS[country];
-  const isBangladesh = country==="BD";
-
-  const yearOptions = useMemo(()=>{
-    const arr=[]; for(let y=2014;y<=2060;y++) arr.push(y); return arr;
-  },[]);
-
-  // Fetch the full live country directory once, on first load (silently falls back if offline).
-  useEffect(()=>{
-    let cancelled=false;
-    fetchLiveCountries().then(list=>{
-      if(!cancelled && list && list.length) setLiveCountries(list);
-    });
-    return ()=>{cancelled=true;};
-  },[]);
-
-  // Fetch live holidays whenever the selected country or year changes.
-  useEffect(()=>{
-    let cancelled=false;
-    const key = country+"-"+viewYear;
-    if(holidayCache[key]){ setLiveStatus("live"); return; }
-    setLiveStatus("loading");
-    fetchLiveHolidays(viewYear, country).then(list=>{
-      if(cancelled) return;
-      if(list && list.length){
-        setHolidayCache(prev=>({...prev, [key]: list}));
-        setLiveStatus("live");
-      } else {
-        setLiveStatus("offline");
-      }
-    });
-    return ()=>{cancelled=true;};
-  },[country, viewYear]);
-
-  const countryDirectory = liveCountries || ALL_COUNTRIES;
-  const filteredCountries = useMemo(()=>{
-    const q = countryQuery.trim().toLowerCase();
-    const src = countryDirectory;
-    if(!q) return src.slice(0,60);
-    return src.filter(c=> c.name.toLowerCase().includes(q)).slice(0,60);
-  },[countryQuery, countryDirectory]);
-
-  // Merge: live-fetched holidays take priority; bundled sample data fills in when offline/unsupported.
-  function getHolidaysForYear(y){
-    const key = country+"-"+y;
-    const live = holidayCache[key] || null;
-    if(isBangladesh){
-      const base = getBdHolidaysForYear(y);
-      if(live){
-        const extra = live.filter(lh => !base.some(b=> b.m===lh.m && b.d===lh.d));
-        return [...base, ...extra.map(h=>({...h, y}))].sort((a,b)=> a.m-b.m || a.d-b.d);
-      }
-      return base;
-    }
-    if(live) return live.map(h=>({...h, y})).sort((a,b)=> a.m-b.m || a.d-b.d);
-    if(countryInfo) return countryInfo.list.map(h=>({...h, type:"national", y})).sort((a,b)=> a.m-b.m || a.d-b.d);
-    return [];
-  }
-
-  function holidayMapForMonth(y,m){
-    const map = {};
-    getHolidaysForYear(y).filter(h=>h.m===m+1).forEach(h=>{ map[h.d] = h; });
-    return map;
-  }
-
-  function isWeekend(dateObj){
-    const wd = dateObj.getDay();
-    if(isBangladesh) return wd===5 || wd===6;
-    if(countryInfo) return countryInfo.weekend.includes(wd);
-    return wd===0 || wd===6;
-  }
-
-  function changeMonth(delta){
-    let m = viewMonth+delta, y = viewYear;
-    if(m<0){m=11;y--;} if(m>11){m=0;y++;}
-    if(y<2014) {y=2014; m=0;} if(y>2060){y=2060; m=11;}
-    setViewMonth(m); setViewYear(y);
-  }
-
-  /* Build calendar grid cells (Sun-start) */
-  const gridCells = useMemo(()=>{
-    const first = new Date(viewYear, viewMonth, 1);
-    const startOffset = first.getDay(); // 0=Sun
-    const totalDays = daysInMonth(viewYear, viewMonth);
-    const prevDays = daysInMonth(viewYear, viewMonth===0?11:viewMonth-1);
-    const cells = [];
-    for(let i=0;i<startOffset;i++){
-      cells.push({out:true, day: prevDays-startOffset+1+i});
-    }
-    const holMap = holidayMapForMonth(viewYear, viewMonth);
-    for(let d=1; d<=totalDays; d++){
-      const dateObj = new Date(viewYear, viewMonth, d);
-      cells.push({
-        out:false, day:d, dateObj,
-        holiday: holMap[d]||null,
-        weekend: isWeekend(dateObj),
-        isToday: dateObj.toDateString()===today.toDateString(),
-        bn: isBangladesh ? gregorianToBengali(dateObj) : null,
-        hi: isBangladesh ? gregorianToHijri(dateObj) : null,
-      });
-    }
-    while(cells.length % 7 !== 0 || cells.length<42){
-      const nd = cells.length - (startOffset+totalDays) + 1;
-      cells.push({out:true, day: nd});
-      if(cells.length>=42) break;
-    }
-    return cells;
-  },[viewYear, viewMonth, country, holidayCache]);
-
-  const monthHolidays = useMemo(()=> getHolidaysForYear(viewYear).filter(h=>h.m===viewMonth+1)
-  ,[viewYear, viewMonth, country, holidayCache]);
-
-  const yearHolidays = useMemo(()=> getHolidaysForYear(viewYear)
-  ,[viewYear, country, holidayCache]);
-
-  return (
-    <div className="app" dir={isRtl?"rtl":"ltr"}>
-      <header className="top">
-        <div className="brand">
-          <div className="moon-badge" aria-hidden="true">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <radialGradient id="moonGrad" cx="35%" cy="30%" r="75%">
-                  <stop offset="0%" stopColor="#fdf1c8"/>
-                  <stop offset="55%" stopColor="#e8b854"/>
-                  <stop offset="100%" stopColor="#a5731f"/>
-                </radialGradient>
-              </defs>
-              <circle cx="50" cy="50" r="38" fill="url(#moonGrad)"/>
-              <circle cx="65" cy="37" r="33" fill="#0a0f1e"/>
-              <circle cx="79" cy="19" r="2.4" fill="#fdf1c8"/>
-              <circle cx="88" cy="33" r="1.4" fill="#fdf1c8"/>
-              <circle cx="70" cy="10" r="1.2" fill="#fdf1c8"/>
-            </svg>
-          </div>
-          <div className="brand-text">
-            <div className="rb">RB</div>
-            <div className="by">By Rafsan</div>
-            <div className="tagline">Gregorian · Bengali · Hijri — one calendar, every country</div>
-          </div>
-        </div>
-        <div className="top-controls">
-          <div className="search-wrap">
-            <input type="text" placeholder={t.searchCountry} value={countryQuery}
-              onChange={e=>{setCountryQuery(e.target.value); setShowResults(true);}}
-              onFocus={()=>setShowResults(true)}
-              onBlur={()=>setTimeout(()=>setShowResults(false),150)}
-              style={{width:220}}/>
-            {showResults && (
-              <div className="search-results">
-                {filteredCountries.map(c=>(
-                  <div key={c.code} onMouseDown={()=>{setCountry(c.code); setCountryQuery(""); setShowResults(false);}}>
-                    {c.flag} {c.name}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <select value={lang} onChange={e=>setLang(e.target.value)} aria-label={t.selectLang}>
-            {Object.entries(LANGS).map(([code,l])=> <option key={code} value={code}>{l.name}</option>)}
-          </select>
-        </div>
-      </header>
-
-      <div className="live-badge">
-        {liveStatus==="loading" && <span>🔄 checking for live holiday data…</span>}
-        {liveStatus==="live" && <span className="on">● live holiday data (date.nager.at)</span>}
-        {liveStatus==="offline" && <span className="off">● offline / bundled sample data{isBangladesh?" (Bangladesh dataset)":""}</span>}
-      </div>
-
-      <nav className="tabs">
-        <button className={tab==="month"?"active":""} onClick={()=>setTab("month")}>{t.month}</button>
-        <button className={tab==="holidays"?"active":""} onClick={()=>setTab("holidays")}>{t.holidays}</button>
-        <button className={tab==="world"?"active":""} onClick={()=>setTab("world")}>{t.world}</button>
-      </nav>
-
-      {tab==="month" && (
-        <div className="panel">
-          <div className="cal-controls">
-            <div className="month-nav">
-              <button onClick={()=>changeMonth(-1)} aria-label="Previous month">‹</button>
-              <div>
-                <div className="month-title">{MONTH_NAMES[viewMonth]} {viewYear}</div>
-                {isBangladesh && (
-                  <div className="sub-date-line">
-                    {BN_MONTHS[gregorianToBengali(new Date(viewYear,viewMonth,15)).monthIndex]} {gregorianToBengali(new Date(viewYear,viewMonth,15)).year} BS
-                    &nbsp;·&nbsp;
-                    {HIJRI_MONTHS[gregorianToHijri(new Date(viewYear,viewMonth,15)).monthIndex]} {gregorianToHijri(new Date(viewYear,viewMonth,15)).year} AH
-                  </div>
-                )}
-              </div>
-              <button onClick={()=>changeMonth(1)} aria-label="Next month">›</button>
+    <header>
+        <div class="brand">
+            <div class="logo">🌙</div>
+            <div class="title-group">
+                <h1 id="ui-app-title">RB Calendar</h1>
+                <div class="author" id="ui-author">By Rafsan</div>
             </div>
-            <select value={viewYear} onChange={e=>setViewYear(+e.target.value)} aria-label={t.selectYear}>
-              {yearOptions.map(y=> <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
+        </div>
 
-          {isBangladesh && (
-            <div className="legend" style={{marginBottom:12}}>
-              <span><span className="dot bn"></span>Bengali (BS)</span>
-              <span><span className="dot ar"></span>Hijri (AH)</span>
-              <span><span className="dot hol"></span>{t.holidays}</span>
-              <span style={{opacity:.7}}>{t.approxNote}</span>
+        <div class="controls">
+            <select id="countrySelect" onchange="onCountryOrYearChange()">
+                <option value="BD" selected>🇧🇩 Bangladesh</option>
+                <option value="US">🇺🇸 United States</option>
+                <option value="GB">🇬🇧 United Kingdom</option>
+                <option value="SA">🇸🇦 Saudi Arabia</option>
+                <option value="IN">🇮🇳 India</option>
+            </select>
+
+            <select id="langSelect" onchange="onLanguageChange()">
+                <option value="bn" selected>বাংলা</option>
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select>
+
+            <select id="yearSelect" onchange="onCountryOrYearChange()"></select>
+            <select id="monthSelect" onchange="renderCalendar()"></select>
+            <button class="btn-today" id="ui-today-btn" onclick="goToToday()">আজ</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="calendar-section">
+            <div class="month-header">
+                <h2 id="monthYearTitle"></h2>
+                <div class="nav-btns">
+                    <button class="nav-btn" onclick="prevMonth()">&lt;</button>
+                    <button class="nav-btn" onclick="nextMonth()">&gt;</button>
+                </div>
             </div>
-          )}
-          {!isBangladesh && liveStatus==="offline" && !countryInfo && <div className="note">{t.noData}</div>}
 
-          <div className="grid">
-            {WD_SHORT.map((w,i)=>(
-              <div key={w} className={"wd "+((isBangladesh? (i===5||i===6) : (countryInfo? countryInfo.weekend.includes(i): (i===0||i===6))) ? "weekend":"")}>{w}</div>
-            ))}
-            {gridCells.map((c,idx)=>(
-              <div key={idx} className={"cell "+(c.out?"out ":"")+(c.isToday?"today":"")}>
-                {!c.out && (
-                  <React.Fragment>
-                    <div className={"g-num "+((c.holiday||c.weekend)?"holiday":"")}>{c.day}</div>
-                    {isBangladesh && (
-                      <div className="sub-nums">
-                        <span className="bn">{toBnDigits(c.bn.day)}</span>
-                        <span className="ar">{c.hi.day}</span>
-                      </div>
-                    )}
-                    {c.holiday && <span className="hol-name">{c.holiday.name}</span>}
-                  </React.Fragment>
-                )}
-                {c.out && <div className="g-num" style={{fontSize:13}}>{c.day}</div>}
-              </div>
-            ))}
-          </div>
+            <div class="weekdays" id="weekdays"></div>
+            <div class="days-grid" id="daysGrid"></div>
+
+            <div class="legend" id="legendBox">
+                <div class="legend-item"><div class="dot" style="background: var(--holiday-red);"></div> <span id="ui-leg-holiday">ছুটি</span></div>
+                <div class="legend-item"><div class="dot" style="background: var(--weekend-color);"></div> <span id="ui-leg-weekend">সাপ্তাহিক ছুটি</span></div>
+                <div class="legend-item" id="bdLegend1"><div class="dot" style="background: var(--bn-color);"></div> <span id="ui-leg-bangla">বাংলা তারিখ</span></div>
+                <div class="legend-item" id="bdLegend2"><div class="dot" style="background: var(--ar-color);"></div> <span id="ui-leg-arabic">হিজরি তারিখ</span></div>
+            </div>
         </div>
-      )}
 
-      {tab==="holidays" && (
-        <div className="panel">
-          <div className="cal-controls">
-            <div className="month-title">{MONTH_NAMES[viewMonth]} {viewYear} — {t.holidays}</div>
-            <select value={viewYear} onChange={e=>setViewYear(+e.target.value)}>
-              {yearOptions.map(y=> <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
-          <div className="hol-list">
-            {yearHolidays.length===0 && <div className="note">{t.noData}</div>}
-            {yearHolidays.map((h,i)=>(
-              <div className="hol-row" key={i}>
-                <div className="hol-date">{h.d} {MONTH_NAMES[h.m-1]}</div>
-                <div style={{flex:1}}>{h.name}</div>
-                <div className={"hol-tag "+h.type}>{t[h.type]||h.type}</div>
-              </div>
-            ))}
-          </div>
+        <div class="sidebar">
+            <h3>
+                <span id="ui-sidebar-title">বার্ষিক ছুটির তালিকা</span>
+                <span id="chartYearBadge" style="font-size: 12px; color: var(--accent);">2026</span>
+            </h3>
+            <div class="holiday-list" id="holidayList"></div>
         </div>
-      )}
-
-      {tab==="world" && (
-        <div className="panel">
-          <div className="month-title" style={{marginBottom:16}}>{t.world}</div>
-          <div className="world-grid">
-            {Object.entries(WORLD_HOLIDAYS).map(([code,c])=>(
-              <div className="country-card" key={code}>
-                <h4>{c.flag} {c.name}</h4>
-                <ul>
-                  {(code==="BD"? getBdHolidaysForYear(viewYear) : c.list).slice(0,8).map((h,i)=>(
-                    <li key={i}>{h.d} {MONTH_NAMES[h.m-1]} — {h.name}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <footer>
-        RB Calendar — designed &amp; built for GitHub Pages / PWA install. Years 2014–2060 supported.<br/>
-        Bengali date uses the reformed Bangladeshi solar calendar (algorithmic, Pohela Boishakh fixed to 14 April). Hijri date uses the standard tabular Islamic calendar — both are close approximations; real religious holidays remain subject to moon sighting.<br/>
-        🌙 <b>By Rafsan</b>
-      </footer>
     </div>
-  );
-}
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+    <script>
+        const i18n = {
+            bn: {
+                appTitle: "আরবি ক্যালেন্ডার",
+                author: "রাফসান দ্বারা তৈরি",
+                todayBtn: "আজ",
+                holiday: "ছুটি",
+                weekend: "সাপ্তাহিক ছুটি",
+                banglaDate: "বাংলা তারিখ",
+                arabicDate: "হিজরি তারিখ",
+                sidebarTitle: "বার্ষিক ছুটির তালিকা",
+                nationalTag: "জাতীয়",
+                months: ["জানুয়ারী","ফেব্রুয়ারী","মার্চ","এপ্রিল","মে","জুন","জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"],
+                weekdays: ["রবি","সোম","মঙ্গল","বুধ","বৃহঃ","শুক্র","শনি"],
+                holidays: {
+                    "02-21": "শহীদ দিবস ও আন্তর্জাতিক মাতৃভাষা দিবস",
+                    "03-17": "বঙ্গবন্ধুর জন্মবার্ষিকী",
+                    "03-26": "স্বাধীনতা দিবস",
+                    "04-14": "পহেলা বৈশাখ",
+                    "05-01": "মে দিবস",
+                    "08-05": "জুলাই বিপ্লব দিবস",
+                    "08-15": "জাতীয় শোক দিবস",
+                    "12-16": "বিজয় দিবস",
+                    "12-25": "বড়দিন"
+                }
+            },
+            en: {
+                appTitle: "RB Calendar",
+                author: "By Rafsan",
+                todayBtn: "Today",
+                holiday: "Holiday",
+                weekend: "Weekend",
+                banglaDate: "Bangla Date",
+                arabicDate: "Arabic Date",
+                sidebarTitle: "Yearly Holidays Chart",
+                nationalTag: "National",
+                months: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+                weekdays: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
+                holidays: {
+                    "02-21": "Language Martyrs' Day",
+                    "03-17": "Bangabandhu Birthday",
+                    "03-26": "Independence Day",
+                    "04-14": "Pohela Boishakh",
+                    "05-01": "May Day",
+                    "08-05": "July Uprising Day",
+                    "08-15": "National Mourning Day",
+                    "12-16": "Victory Day",
+                    "12-25": "Christmas Day"
+                }
+            },
+            ar: {
+                appTitle: "تقويم RB",
+                author: "بواسطة رفشان",
+                todayBtn: "اليوم",
+                holiday: "عطلة",
+                weekend: "عطلة نهاية الأسبوع",
+                banglaDate: "التاريخ البنغالي",
+                arabicDate: "التاريخ الهجري",
+                sidebarTitle: "قائمة العطلات السنوية",
+                nationalTag: "وطني",
+                months: ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"],
+                weekdays: ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"],
+                holidays: {
+                    "02-21": "يوم لغة الأم",
+                    "03-26": "يوم الاستقلال",
+                    "05-01": "عيد العمال",
+                    "12-16": "يوم النصر",
+                    "12-25": "عيد الميلاد"
+                }
+            }
+        };
 
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
-</script>
+        const countryHolidays = {
+            BD: { weekends: [5, 6] },
+            US: { weekends: [0, 6] },
+            SA: { weekends: [5, 6] },
+            IN: { weekends: [0, 6] },
+            GB: { weekends: [0, 6] }
+        };
+
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+
+        function convertNum(num, lang) {
+            if (lang === 'bn') {
+                const bnNums = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+                return String(num).split('').map(d => bnNums[d] || d).join('');
+            }
+            if (lang === 'ar') {
+                const arNums = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+                return String(num).split('').map(d => arNums[d] || d).join('');
+            }
+            return num;
+        }
+
+        const yearSelect = document.getElementById('yearSelect');
+        for (let y = 2014; y <= 2060; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.innerText = y;
+            if (y === currentYear) opt.selected = true;
+            yearSelect.appendChild(opt);
+        }
+
+        function populateMonths() {
+            const monthSelect = document.getElementById('monthSelect');
+            monthSelect.innerHTML = '';
+            const lang = document.getElementById('langSelect').value;
+            const dict = i18n[lang] || i18n.bn;
+
+            dict.months.forEach((m, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = m;
+                if (idx === currentMonth) opt.selected = true;
+                monthSelect.appendChild(opt);
+            });
+        }
+
+        function updateStaticUI() {
+            const lang = document.getElementById('langSelect').value;
+            const dict = i18n[lang] || i18n.bn;
+
+            document.getElementById('ui-app-title').innerText = dict.appTitle;
+            document.getElementById('ui-author').innerText = dict.author;
+            document.getElementById('ui-today-btn').innerText = dict.todayBtn;
+            document.getElementById('ui-leg-holiday').innerText = dict.holiday;
+            document.getElementById('ui-leg-weekend').innerText = dict.weekend;
+            document.getElementById('ui-leg-bangla').innerText = dict.banglaDate;
+            document.getElementById('ui-leg-arabic').innerText = dict.arabicDate;
+            document.getElementById('ui-sidebar-title').innerText = dict.sidebarTitle;
+        }
+
+        function onLanguageChange() {
+            updateStaticUI();
+            populateMonths();
+            renderCalendar();
+        }
+
+        function goToToday() {
+            const now = new Date();
+            currentYear = now.getFullYear();
+            currentMonth = now.getMonth();
+            document.getElementById('yearSelect').value = currentYear;
+            populateMonths();
+            renderCalendar();
+        }
+
+        function prevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            document.getElementById('yearSelect').value = currentYear;
+            document.getElementById('monthSelect').value = currentMonth;
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            document.getElementById('yearSelect').value = currentYear;
+            document.getElementById('monthSelect').value = currentMonth;
+            renderCalendar();
+        }
+
+        function onCountryOrYearChange() {
+            currentYear = parseInt(document.getElementById('yearSelect').value);
+            currentMonth = parseInt(document.getElementById('monthSelect').value || currentMonth);
+            renderCalendar();
+        }
+
+        function getBengaliDate(date) {
+            const day = date.getDate();
+            let bnDay = day - 13;
+            if (bnDay <= 0) bnDay += 30;
+            return convertNum(bnDay, 'bn');
+        }
+
+        function getArabicDate(date) {
+            try {
+                const formatter = new Intl.DateTimeFormat('ar-TN-u-ca-islamic-uma', { day: 'numeric' });
+                return formatter.format(date);
+            } catch(e) {
+                return date.getDate();
+            }
+        }
+
+        function renderCalendar() {
+            const lang = document.getElementById('langSelect').value;
+            const country = document.getElementById('countrySelect').value;
+            currentYear = parseInt(document.getElementById('yearSelect').value);
+            currentMonth = parseInt(document.getElementById('monthSelect').value);
+
+            const dict = i18n[lang] || i18n.bn;
+            const countryData = countryHolidays[country] || countryHolidays.BD;
+
+            if (country === 'BD') {
+                document.getElementById('bdLegend1').style.display = 'flex';
+                document.getElementById('bdLegend2').style.display = 'flex';
+            } else {
+                document.getElementById('bdLegend1').style.display = 'none';
+                document.getElementById('bdLegend2').style.display = 'none';
+            }
+
+            document.getElementById('monthYearTitle').innerText = `${dict.months[currentMonth]} ${convertNum(currentYear, lang)}`;
+
+            const weekdaysContainer = document.getElementById('weekdays');
+            weekdaysContainer.innerHTML = '';
+            dict.weekdays.forEach((day, idx) => {
+                const div = document.createElement('div');
+                div.innerText = day;
+                if (countryData.weekends.includes(idx)) div.style.color = 'var(--weekend-color)';
+                weekdaysContainer.appendChild(div);
+            });
+
+            const daysGrid = document.getElementById('daysGrid');
+            daysGrid.innerHTML = '';
+
+            const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+            const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const prevMonthTotalDays = new Date(currentYear, currentMonth, 0).getDate();
+            const today = new Date();
+
+            for (let i = firstDayIndex - 1; i >= 0; i--) {
+                const prevDay = prevMonthTotalDays - i;
+                const cell = document.createElement('div');
+                cell.className = 'day-cell other-month';
+                cell.innerHTML = `<div class="eng-num">${convertNum(prevDay, lang)}</div>`;
+                daysGrid.appendChild(cell);
+            }
+
+            for (let d = 1; d <= totalDays; d++) {
+                const dateObj = new Date(currentYear, currentMonth, d);
+                const dayOfWeek = dateObj.getDay();
+                const mm = String(currentMonth + 1).padStart(2, '0');
+                const dd = String(d).padStart(2, '0');
+                const dateKey = `${mm}-${dd}`;
+
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+
+                if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d) {
+                    cell.classList.add('today');
+                }
+
+                const isWeekend = countryData.weekends.includes(dayOfWeek);
+                if (isWeekend) cell.classList.add('weekend');
+
+                const holidayName = dict.holidays[dateKey];
+
+                let subDatesHtml = '';
+                if (country === 'BD') {
+                    const bn = getBengaliDate(dateObj);
+                    const ar = getArabicDate(dateObj);
+                    subDatesHtml = `<div class="sub-dates"><span class="bn-date">${bn}</span><span class="ar-date">${ar}</span></div>`;
+                }
+
+                let holidayHtml = '';
+                if (holidayName) {
+                    holidayHtml = `<div class="holiday-tag">${holidayName}</div>`;
+                } else if (isWeekend) {
+                    holidayHtml = `<div class="holiday-tag" style="background: rgba(240, 136, 62, 0.15); color: var(--weekend-color); border-left-color: var(--weekend-color);">${dict.weekend}</div>`;
+                }
+
+                cell.innerHTML = `
+                    <div>
+                        <div class="day-header-num"><span class="eng-num">${convertNum(d, lang)}</span></div>
+                        ${subDatesHtml}
+                    </div>
+                    ${holidayHtml}
+                `;
+                daysGrid.appendChild(cell);
+            }
+
+            const totalCells = firstDayIndex + totalDays;
+            const nextPadding = (7 - (totalCells % 7)) % 7;
+            for (let n = 1; n <= nextPadding; n++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell other-month';
+                cell.innerHTML = `<div class="eng-num">${convertNum(n, lang)}</div>`;
+                daysGrid.appendChild(cell);
+            }
+
+            renderHolidayChart();
+        }
+
+        function renderHolidayChart() {
+            const lang = document.getElementById('langSelect').value;
+            const year = parseInt(document.getElementById('yearSelect').value);
+            document.getElementById('chartYearBadge').innerText = convertNum(year, lang);
+
+            const dict = i18n[lang] || i18n.bn;
+            const listContainer = document.getElementById('holidayList');
+            listContainer.innerHTML = '';
+
+            Object.keys(dict.holidays).sort().forEach(dateKey => {
+                const [mm, dd] = dateKey.split('-').map(Number);
+                const monthName = dict.months[mm - 1];
+                const holidayName = dict.holidays[dateKey];
+
+                const item = document.createElement('div');
+                item.className = 'holiday-item national';
+                item.innerHTML = `
+                    <div>
+                        <div class="name-str">${holidayName}</div>
+                        <div class="date-str">${convertNum(dd, lang)} ${monthName}, ${convertNum(year, lang)}</div>
+                    </div>
+                    <span style="font-size: 10px; padding: 2px 6px; background: rgba(255,123,114,0.2); color: var(--holiday-red); border-radius: 4px;">${dict.nationalTag}</span>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        updateStaticUI();
+        populateMonths();
+        renderCalendar();
+    </script>
 </body>
+  
 </html>
