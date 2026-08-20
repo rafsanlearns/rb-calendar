@@ -3,704 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RB Calendar</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d1117">
-    <style>
-        :root {
-            --bg-main: #0d1117;
-            --bg-card: #161b22;
-            --bg-hover: #21262d;
-            --accent: #58a6ff;
-            --text-main: #c9d1d9;
-            --text-muted: #8b949e;
-            --holiday-red: #ff7b72;
-            --weekend-color: #f0883e;
-            --border: #30363d;
-            --bn-color: #7ee787;
-            --ar-color: #d2a8ff;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background-color: rgba(22, 27, 34, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo {
-            font-size: 32px;
-            filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.4));
-        }
-
-        .title-group h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-
-        .title-group .author {
-            font-size: 11px;
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        select, button {
-            background-color: #21262d;
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        select:focus, button:hover {
-            border-color: var(--accent);
-        }
-
-        .btn-today {
-            background-color: var(--accent);
-            color: #0d1117;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-        }
-
-        .main-container {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 15px;
-            padding: 15px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        @media (max-width: 900px) {
-            .main-container {
-                grid-template-columns: 1fr;
+    <title>RB - Universal Calendar</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        spaceBg: '#0b0f19',
+                        cardBg: '#111827',
+                        accentGold: '#f59e0b',
+                        bnBlue: '#3b82f6',
+                        arGreen: '#10b981'
+                    }
+                }
             }
         }
-
-        .calendar-section {
-            background-color: var(--bg-card);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #1e1b4b, #090d16);
+            color: #f3f4f6;
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
         }
-
-        .month-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 0 5px;
-        }
-
-        .month-header h2 {
-            font-size: 22px;
-            color: #ffffff;
-        }
-
-        .nav-btns {
-            display: flex;
-            gap: 5px;
-        }
-
-        .nav-btn {
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background-color: #21262d;
-        }
-
-        .weekdays {
+        .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
-
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            flex: 1;
-        }
-
-        .day-cell {
-            background-color: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            min-height: 90px;
-            padding: 6px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            transition: transform 0.1s, border-color 0.2s;
-        }
-
-        .day-cell:hover {
-            border-color: var(--accent);
-            background-color: var(--bg-hover);
-        }
-
-        .day-cell.today {
-            border: 2px solid var(--accent);
-            background-color: rgba(88, 166, 255, 0.08);
-        }
-
-        .day-cell.other-month {
-            opacity: 0.35;
-        }
-
-        .day-header-num {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .eng-num {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .day-cell.weekend .eng-num {
-            color: var(--weekend-color);
-        }
-
-        .sub-dates {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .bn-date { color: var(--bn-color); }
-        .ar-date { color: var(--ar-color); }
-
-        .holiday-tag {
-            font-size: 10px;
-            background-color: rgba(255, 123, 114, 0.15);
-            color: var(--holiday-red);
-            border-left: 3px solid var(--holiday-red);
-            padding: 2px 4px;
-            border-radius: 2px;
-            margin-top: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sidebar {
-            background-color: var(--bg-card);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            max-height: 650px;
-        }
-
-        .sidebar h3 {
-            font-size: 16px;
-            color: #ffffff;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .holiday-list {
-            overflow-y: auto;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-right: 5px;
-        }
-
-        .holiday-item {
-            background: #21262d;
-            padding: 8px 12px;
-            border-radius: 6px;
-            border-left: 3px solid var(--accent);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .holiday-item.national {
-            border-left-color: var(--holiday-red);
-        }
-
-        .holiday-item .date-str {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .holiday-item .name-str {
-            font-size: 13px;
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .legend {
-            display: flex;
-            gap: 12px;
-            font-size: 11px;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8 flex flex-col items-center">
 
-    <header>
-        <div class="brand">
-            <div class="logo">🌙</div>
-            <div class="title-group">
-                <h1 id="ui-app-title">RB Calendar</h1>
-                <div class="author" id="ui-author">By Rafsan</div>
+    <!-- Header Section -->
+    <header class="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-slate-900/80 p-4 rounded-xl border border-slate-800 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+            <div class="text-4xl text-amber-400">🌙</div>
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-wider text-amber-400">RB</h1>
+                <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase">By Rafsan</p>
             </div>
         </div>
 
-        <div class="controls">
-            <select id="countrySelect" onchange="onCountryOrYearChange()">
-                <option value="BD" selected>🇧🇩 Bangladesh</option>
-                <option value="US">🇺🇸 United States</option>
-                <option value="GB">🇬🇧 United Kingdom</option>
-                <option value="SA">🇸🇦 Saudi Arabia</option>
-                <option value="IN">🇮🇳 India</option>
-            </select>
+        <!-- Language & Country Controls -->
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div class="flex-1 sm:flex-none">
+                <input type="text" id="countrySearch" placeholder="Search Country..." list="countriesList" class="w-full bg-slate-800 text-sm border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400" onchange="changeCountry(this.value)">
+                <datalist id="countriesList">
+                    <option value="BD">Bangladesh</option>
+                    <option value="US">United States</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="IN">India</option>
+                    <option value="SA">Saudi Arabia</option>
+                    <option value="AE">UAE</option>
+                    <option value="CA">Canada</option>
+                    <option value="AU">Australia</option>
+                    <option value="JP">Japan</option>
+                    <option value="DE">Germany</option>
+                </datalist>
+            </div>
 
-            <select id="langSelect" onchange="onLanguageChange()">
-                <option value="bn" selected>বাংলা</option>
+            <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-slate-800 text-sm border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400">
                 <option value="en">English</option>
+                <option value="bn">বাংলা</option>
+                <option value="es">Español</option>
+                <option value="hi">हिन्दी</option>
                 <option value="ar">العربية</option>
+                <option value="fa">ফার্সী (Persian)</option>
+                <option value="fr">Français</option>
+                <option value="zh">中文</option>
+                <option value="ru">Русский</option>
+                <option value="de">Deutsch</option>
+                <option value="pt">Português</option>
             </select>
-
-            <select id="yearSelect" onchange="onCountryOrYearChange()"></select>
-            <select id="monthSelect" onchange="renderCalendar()"></select>
-            <button class="btn-today" id="ui-today-btn" onclick="goToToday()">আজ</button>
         </div>
     </header>
 
-    <div class="main-container">
-        <div class="calendar-section">
-            <div class="month-header">
-                <h2 id="monthYearTitle"></h2>
-                <div class="nav-btns">
-                    <button class="nav-btn" onclick="prevMonth()">&lt;</button>
-                    <button class="nav-btn" onclick="nextMonth()">&gt;</button>
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl bg-slate-900/90 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-2xl">
+        
+        <!-- Controls & Navigation -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <div class="flex items-center gap-2">
+                <button onclick="prevMonth()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700">❮</button>
+                <h2 id="monthYearText" class="text-xl font-bold min-w-[180px] text-center">August 2026</h2>
+                <button onclick="nextMonth()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700">❯</button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <select id="yearSelect" onchange="selectYear(this.value)" class="bg-slate-800 text-sm border border-slate-700 rounded-lg px-3 py-1.5 text-slate-200">
+                    <!-- Years 2014 to 2060 will be generated -->
+                </select>
+
+                <!-- Navigation Tabs -->
+                <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
+                    <button id="btnMonth" onclick="switchView('month')" class="px-3 py-1 text-xs rounded-md bg-amber-500 text-slate-950 font-bold">Month</button>
+                    <button id="btnHolidays" onclick="switchView('holidays')" class="px-3 py-1 text-xs rounded-md text-slate-300 hover:text-white">Annual Holidays Chart</button>
                 </div>
             </div>
+        </div>
 
-            <div class="weekdays" id="weekdays"></div>
-            <div class="days-grid" id="daysGrid"></div>
+        <!-- Legend (Bangladesh Multi-Calendar Info) -->
+        <div id="bdLegend" class="flex flex-wrap gap-4 text-xs mb-4 p-2 bg-slate-800/50 rounded-lg border border-slate-800">
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-200"></span> <span id="lblGreg">Gregorian</span></span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-400"></span> <span id="lblBn">Bengali (BS)</span></span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span id="lblAr">Hijri (AH)</span></span>
+            <span class="text-slate-400 ml-auto">* Islamic dates subject to moon sighting</span>
+        </div>
 
-            <div class="legend" id="legendBox">
-                <div class="legend-item"><div class="dot" style="background: var(--holiday-red);"></div> <span id="ui-leg-holiday">ছুটি</span></div>
-                <div class="legend-item"><div class="dot" style="background: var(--weekend-color);"></div> <span id="ui-leg-weekend">সাপ্তাহিক ছুটি</span></div>
-                <div class="legend-item" id="bdLegend1"><div class="dot" style="background: var(--bn-color);"></div> <span id="ui-leg-bangla">বাংলা তারিখ</span></div>
-                <div class="legend-item" id="bdLegend2"><div class="dot" style="background: var(--ar-color);"></div> <span id="ui-leg-arabic">হিজরি তারিখ</span></div>
+        <!-- Calendar Month View -->
+        <div id="monthView">
+            <div class="calendar-grid text-center font-semibold text-slate-400 text-xs py-2 border-b border-slate-800 mb-2">
+                <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+            </div>
+            <div id="daysGrid" class="calendar-grid gap-1 md:gap-2">
+                <!-- Days rendered dynamically -->
             </div>
         </div>
 
-        <div class="sidebar">
-            <h3>
-                <span id="ui-sidebar-title">বার্ষিক ছুটির তালিকা</span>
-                <span id="chartYearBadge" style="font-size: 12px; color: var(--accent);">2026</span>
-            </h3>
-            <div class="holiday-list" id="holidayList"></div>
+        <!-- Annual Holidays View -->
+        <div id="holidaysView" class="hidden">
+            <h3 class="text-lg font-bold mb-4 text-amber-400" id="holidayTitle">Annual National Holidays</h3>
+            <div id="holidaysList" class="space-y-2 max-h-[500px] overflow-y-auto pr-2">
+                <!-- Holidays loaded dynamically -->
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        const i18n = {
-            bn: {
-                appTitle: "আরবি ক্যালেন্ডার",
-                author: "রাফসান দ্বারা তৈরি",
-                todayBtn: "আজ",
-                holiday: "ছুটি",
-                weekend: "সাপ্তাহিক ছুটি",
-                banglaDate: "বাংলা তারিখ",
-                arabicDate: "হিজরি তারিখ",
-                sidebarTitle: "বার্ষিক ছুটির তালিকা",
-                nationalTag: "জাতীয়",
-                months: ["জানুয়ারী","ফেব্রুয়ারী","মার্চ","এপ্রিল","মে","জুন","জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"],
-                weekdays: ["রবি","সোম","মঙ্গল","বুধ","বৃহঃ","শুক্র","শনি"],
-                holidays: {
-                    "02-21": "শহীদ দিবস ও আন্তর্জাতিক মাতৃভাষা দিবস",
-                    "03-17": "বঙ্গবন্ধুর জন্মবার্ষিকী",
-                    "03-26": "স্বাধীনতা দিবস",
-                    "04-14": "পহেলা বৈশাখ",
-                    "05-01": "মে দিবস",
-                    "08-05": "জুলাই বিপ্লব দিবস",
-                    "08-15": "জাতীয় শোক দিবস",
-                    "12-16": "বিজয় দিবস",
-                    "12-25": "বড়দিন"
-                }
-            },
-            en: {
-                appTitle: "RB Calendar",
-                author: "By Rafsan",
-                todayBtn: "Today",
-                holiday: "Holiday",
-                weekend: "Weekend",
-                banglaDate: "Bangla Date",
-                arabicDate: "Arabic Date",
-                sidebarTitle: "Yearly Holidays Chart",
-                nationalTag: "National",
-                months: ["January","February","March","April","May","June","July","August","September","October","November","December"],
-                weekdays: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
-                holidays: {
-                    "02-21": "Language Martyrs' Day",
-                    "03-17": "Bangabandhu Birthday",
-                    "03-26": "Independence Day",
-                    "04-14": "Pohela Boishakh",
-                    "05-01": "May Day",
-                    "08-05": "July Uprising Day",
-                    "08-15": "National Mourning Day",
-                    "12-16": "Victory Day",
-                    "12-25": "Christmas Day"
-                }
-            },
-            ar: {
-                appTitle: "تقويم RB",
-                author: "بواسطة رفشان",
-                todayBtn: "اليوم",
-                holiday: "عطلة",
-                weekend: "عطلة نهاية الأسبوع",
-                banglaDate: "التاريخ البنغالي",
-                arabicDate: "التاريخ الهجري",
-                sidebarTitle: "قائمة العطلات السنوية",
-                nationalTag: "وطني",
-                months: ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"],
-                weekdays: ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"],
-                holidays: {
-                    "02-21": "يوم لغة الأم",
-                    "03-26": "يوم الاستقلال",
-                    "05-01": "عيد العمال",
-                    "12-16": "يوم النصر",
-                    "12-25": "عيد الميلاد"
-                }
-            }
-        };
-
-        const countryHolidays = {
-            BD: { weekends: [5, 6] },
-            US: { weekends: [0, 6] },
-            SA: { weekends: [5, 6] },
-            IN: { weekends: [0, 6] },
-            GB: { weekends: [0, 6] }
-        };
-
+        // App State
         let currentYear = new Date().getFullYear();
         let currentMonth = new Date().getMonth();
+        let currentCountry = 'BD';
+        let currentLang = 'en';
+        let viewMode = 'month';
+        let holidaysData = {};
 
-        function convertNum(num, lang) {
-            if (lang === 'bn') {
-                const bnNums = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-                return String(num).split('').map(d => bnNums[d] || d).join('');
-            }
-            if (lang === 'ar') {
-                const arNums = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
-                return String(num).split('').map(d => arNums[d] || d).join('');
-            }
-            return num;
-        }
+        // Translation Dictionary
+        const translations = {
+            en: { Gregorian: "Gregorian", Bengali: "Bengali (BS)", Hijri: "Hijri (AH)", Month: "Month", Holidays: "Annual Holidays Chart", Title: "Annual National Holidays" },
+            bn: { Gregorian: "ইংরেজি", Bengali: "বাংলা", Hijri: "হিজরী", Month: "মাসিক", Holidays: "বার্ষিক ছুটির তালিকা", Title: "বছরের সকল সরকারি ছুটি" },
+            es: { Gregorian: "Gregoriano", Bengali: "Bengalí", Hijri: "Hijri", Month: "Mes", Holidays: "Tabla de Vacaciones", Title: "Días Festivos Nacionales" },
+            hi: { Gregorian: "গ্রেগরিয়ান", Bengali: "बंगाली", Hijri: "हिजरी", Month: "महीना", Holidays: "वार्षिक छुट्टियां", Title: "वार्षिक राष्ट्रीय छुट्टियां" },
+            ar: { Gregorian: "ميلادي", Bengali: "بنغالي", Hijri: "هجري", Month: "شهر", Holidays: "جدول العطلات", Title: "العطل الرسمية السنوية" },
+            fa: { Gregorian: "میلادی", Bengali: "بنگالی", Hijri: "هجری", Month: "ماه", Holidays: "جدول تعطیلات", Title: "تعطیلات رسمی سالانه" },
+            fr: { Gregorian: "Grégorien", Bengali: "Bengali", Hijri: "Hégirien", Month: "Mois", Holidays: "Tableau des Vacances", Title: "Jours Fériés Nationaux" },
+            zh: { Gregorian: "公历", Bengali: "孟加拉历", Hijri: "回历", Month: "月", Holidays: "年度假期表", Title: "年度法定节假日" },
+            ru: { Gregorian: "Григорианский", Bengali: "Бенгальский", Hijri: "Хиджра", Month: "Месяц", Holidays: "Календарь Праздников", Title: "Ежегодные Праздники" },
+            de: { Gregorian: "Gregorianisch", Bengali: "Bengalisch", Hijri: "Hidschri", Month: "Monat", Holidays: "Feiertagstabelle", Title: "Jährliche Feiertage" },
+            pt: { Gregorian: "Gregoriano", Bengali: "Bengali", Hijri: "Hijri", Month: "Mês", Holidays: "Tabela de Feriados", Title: "Feriados Nacionais" }
+        };
 
-        const yearSelect = document.getElementById('yearSelect');
-        for (let y = 2014; y <= 2060; y++) {
-            const opt = document.createElement('option');
-            opt.value = y;
-            opt.innerText = y;
-            if (y === currentYear) opt.selected = true;
-            yearSelect.appendChild(opt);
-        }
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-        function populateMonths() {
-            const monthSelect = document.getElementById('monthSelect');
-            monthSelect.innerHTML = '';
-            const lang = document.getElementById('langSelect').value;
-            const dict = i18n[lang] || i18n.bn;
+        // Init App
+        window.onload = () => {
+            populateYears();
+            fetchHolidays();
+            renderCalendar();
+        };
 
-            dict.months.forEach((m, idx) => {
+        function populateYears() {
+            const select = document.getElementById('yearSelect');
+            for (let y = 2014; y <= 2060; y++) {
                 const opt = document.createElement('option');
-                opt.value = idx;
-                opt.innerText = m;
-                if (idx === currentMonth) opt.selected = true;
-                monthSelect.appendChild(opt);
+                opt.value = y;
+                opt.textContent = y;
+                if (y === currentYear) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        async function fetchHolidays() {
+            try {
+                const response = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${currentYear}/${currentCountry}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    holidaysData = {};
+                    data.forEach(h => { holidaysData[h.date] = h.localName || h.name; });
+                }
+            } catch (e) {
+                console.log("Offline mode or API limit reached");
+            }
+            renderCalendar();
+            renderHolidaysChart();
+        }
+
+        function renderCalendar() {
+            document.getElementById('monthYearText').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            const grid = document.getElementById('daysGrid');
+            grid.innerHTML = '';
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            // Blank spaces for offset
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            const today = new Date();
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === day;
+                const isHoliday = holidaysData[dateStr];
+
+                const dayCard = document.createElement('div');
+                dayCard.className = `min-h-[75px] p-1.5 rounded-lg border text-left flex flex-col justify-between transition ${
+                    isToday ? 'border-amber-400 bg-amber-500/10' : 'border-slate-800 bg-slate-800/40'
+                } ${isHoliday ? 'border-red-500/50 bg-red-500/5' : ''}`;
+
+                // Main Gregorian Date
+                let content = `<div class="flex justify-between items-start">
+                    <span class="font-bold text-base ${isHoliday ? 'text-red-400' : 'text-slate-100'}">${day}</span>`;
+
+                // Sub-dates (Bengali & Arabic) only for Bangladesh context
+                if (currentCountry === 'BD') {
+                    // Approximate calculations for display
+                    const bnDay = (day + 16) % 30 || 30;
+                    const arDay = (day + 5) % 30 || 30;
+                    content += `<div class="text-[10px] space-x-1">
+                        <span class="text-blue-400 font-semibold">${bnDay}</span>
+                        <span class="text-emerald-400 font-semibold">${arDay}</span>
+                    </div>`;
+                }
+                content += `</div>`;
+
+                if (isHoliday) {
+                    content += `<div class="text-[9px] text-red-400 font-medium truncate mt-1">${isHoliday}</div>`;
+                }
+
+                dayCard.innerHTML = content;
+                grid.appendChild(dayCard);
+            }
+        }
+
+        function renderHolidaysChart() {
+            const list = document.getElementById('holidaysList');
+            list.innerHTML = '';
+
+            const dates = Object.keys(holidaysData).sort();
+            if (dates.length === 0) {
+                list.innerHTML = `<p class="text-slate-400 text-sm">No holiday data found or working offline.</p>`;
+                return;
+            }
+
+            dates.forEach(d => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm";
+                item.innerHTML = `
+                    <span class="font-semibold text-slate-300">${d}</span>
+                    <span class="text-amber-400 font-medium">${holidaysData[d]}</span>
+                `;
+                list.appendChild(item);
             });
         }
 
-        function updateStaticUI() {
-            const lang = document.getElementById('langSelect').value;
-            const dict = i18n[lang] || i18n.bn;
-
-            document.getElementById('ui-app-title').innerText = dict.appTitle;
-            document.getElementById('ui-author').innerText = dict.author;
-            document.getElementById('ui-today-btn').innerText = dict.todayBtn;
-            document.getElementById('ui-leg-holiday').innerText = dict.holiday;
-            document.getElementById('ui-leg-weekend').innerText = dict.weekend;
-            document.getElementById('ui-leg-bangla').innerText = dict.banglaDate;
-            document.getElementById('ui-leg-arabic').innerText = dict.arabicDate;
-            document.getElementById('ui-sidebar-title').innerText = dict.sidebarTitle;
-        }
-
-        function onLanguageChange() {
-            updateStaticUI();
-            populateMonths();
-            renderCalendar();
-        }
-
-        function goToToday() {
-            const now = new Date();
-            currentYear = now.getFullYear();
-            currentMonth = now.getMonth();
-            document.getElementById('yearSelect').value = currentYear;
-            populateMonths();
-            renderCalendar();
-        }
-
+        // Actions & Event Listeners
         function prevMonth() {
-            currentMonth--;
-            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            if (currentMonth === 0) { currentMonth = 11; currentYear--; } else { currentMonth--; }
             document.getElementById('yearSelect').value = currentYear;
-            document.getElementById('monthSelect').value = currentMonth;
             renderCalendar();
         }
 
         function nextMonth() {
-            currentMonth++;
-            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            if (currentMonth === 11) { currentMonth = 0; currentYear++; } else { currentMonth++; }
             document.getElementById('yearSelect').value = currentYear;
-            document.getElementById('monthSelect').value = currentMonth;
             renderCalendar();
         }
 
-        function onCountryOrYearChange() {
-            currentYear = parseInt(document.getElementById('yearSelect').value);
-            currentMonth = parseInt(document.getElementById('monthSelect').value || currentMonth);
-            renderCalendar();
+        function selectYear(yr) {
+            currentYear = parseInt(yr);
+            fetchHolidays();
         }
 
-        function getBengaliDate(date) {
-            const day = date.getDate();
-            let bnDay = day - 13;
-            if (bnDay <= 0) bnDay += 30;
-            return convertNum(bnDay, 'bn');
-        }
-
-        function getArabicDate(date) {
-            try {
-                const formatter = new Intl.DateTimeFormat('ar-TN-u-ca-islamic-uma', { day: 'numeric' });
-                return formatter.format(date);
-            } catch(e) {
-                return date.getDate();
+        function changeCountry(code) {
+            if (code && code.length === 2) {
+                currentCountry = code.toUpperCase();
+                document.getElementById('bdLegend').style.display = (currentCountry === 'BD') ? 'flex' : 'none';
+                fetchHolidays();
             }
         }
 
-        function renderCalendar() {
-            const lang = document.getElementById('langSelect').value;
-            const country = document.getElementById('countrySelect').value;
-            currentYear = parseInt(document.getElementById('yearSelect').value);
-            currentMonth = parseInt(document.getElementById('monthSelect').value);
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang] || translations['en'];
+            document.getElementById('lblGreg').textContent = t.Gregorian;
+            document.getElementById('lblBn').textContent = t.Bengali;
+            document.getElementById('lblAr').textContent = t.Hijri;
+            document.getElementById('btnMonth').textContent = t.Month;
+            document.getElementById('btnHolidays').textContent = t.Holidays;
+            document.getElementById('holidayTitle').textContent = t.Title;
+        }
 
-            const dict = i18n[lang] || i18n.bn;
-            const countryData = countryHolidays[country] || countryHolidays.BD;
-
-            if (country === 'BD') {
-                document.getElementById('bdLegend1').style.display = 'flex';
-                document.getElementById('bdLegend2').style.display = 'flex';
+        function switchView(mode) {
+            viewMode = mode;
+            if (mode === 'month') {
+                document.getElementById('monthView').classList.remove('hidden');
+                document.getElementById('holidaysView').classList.add('hidden');
+                document.getElementById('btnMonth').className = "px-3 py-1 text-xs rounded-md bg-amber-500 text-slate-950 font-bold";
+                document.getElementById('btnHolidays').className = "px-3 py-1 text-xs rounded-md text-slate-300 hover:text-white";
             } else {
-                document.getElementById('bdLegend1').style.display = 'none';
-                document.getElementById('bdLegend2').style.display = 'none';
+                document.getElementById('monthView').classList.add('hidden');
+                document.getElementById('holidaysView').classList.remove('hidden');
+                document.getElementById('btnHolidays').className = "px-3 py-1 text-xs rounded-md bg-amber-500 text-slate-950 font-bold";
+                document.getElementById('btnMonth').className = "px-3 py-1 text-xs rounded-md text-slate-300 hover:text-white";
             }
-
-            document.getElementById('monthYearTitle').innerText = `${dict.months[currentMonth]} ${convertNum(currentYear, lang)}`;
-
-            const weekdaysContainer = document.getElementById('weekdays');
-            weekdaysContainer.innerHTML = '';
-            dict.weekdays.forEach((day, idx) => {
-                const div = document.createElement('div');
-                div.innerText = day;
-                if (countryData.weekends.includes(idx)) div.style.color = 'var(--weekend-color)';
-                weekdaysContainer.appendChild(div);
-            });
-
-            const daysGrid = document.getElementById('daysGrid');
-            daysGrid.innerHTML = '';
-
-            const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
-            const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
-            const prevMonthTotalDays = new Date(currentYear, currentMonth, 0).getDate();
-            const today = new Date();
-
-            for (let i = firstDayIndex - 1; i >= 0; i--) {
-                const prevDay = prevMonthTotalDays - i;
-                const cell = document.createElement('div');
-                cell.className = 'day-cell other-month';
-                cell.innerHTML = `<div class="eng-num">${convertNum(prevDay, lang)}</div>`;
-                daysGrid.appendChild(cell);
-            }
-
-            for (let d = 1; d <= totalDays; d++) {
-                const dateObj = new Date(currentYear, currentMonth, d);
-                const dayOfWeek = dateObj.getDay();
-                const mm = String(currentMonth + 1).padStart(2, '0');
-                const dd = String(d).padStart(2, '0');
-                const dateKey = `${mm}-${dd}`;
-
-                const cell = document.createElement('div');
-                cell.className = 'day-cell';
-
-                if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d) {
-                    cell.classList.add('today');
-                }
-
-                const isWeekend = countryData.weekends.includes(dayOfWeek);
-                if (isWeekend) cell.classList.add('weekend');
-
-                const holidayName = dict.holidays[dateKey];
-
-                let subDatesHtml = '';
-                if (country === 'BD') {
-                    const bn = getBengaliDate(dateObj);
-                    const ar = getArabicDate(dateObj);
-                    subDatesHtml = `<div class="sub-dates"><span class="bn-date">${bn}</span><span class="ar-date">${ar}</span></div>`;
-                }
-
-                let holidayHtml = '';
-                if (holidayName) {
-                    holidayHtml = `<div class="holiday-tag">${holidayName}</div>`;
-                } else if (isWeekend) {
-                    holidayHtml = `<div class="holiday-tag" style="background: rgba(240, 136, 62, 0.15); color: var(--weekend-color); border-left-color: var(--weekend-color);">${dict.weekend}</div>`;
-                }
-
-                cell.innerHTML = `
-                    <div>
-                        <div class="day-header-num"><span class="eng-num">${convertNum(d, lang)}</span></div>
-                        ${subDatesHtml}
-                    </div>
-                    ${holidayHtml}
-                `;
-                daysGrid.appendChild(cell);
-            }
-
-            const totalCells = firstDayIndex + totalDays;
-            const nextPadding = (7 - (totalCells % 7)) % 7;
-            for (let n = 1; n <= nextPadding; n++) {
-                const cell = document.createElement('div');
-                cell.className = 'day-cell other-month';
-                cell.innerHTML = `<div class="eng-num">${convertNum(n, lang)}</div>`;
-                daysGrid.appendChild(cell);
-            }
-
-            renderHolidayChart();
         }
-
-        function renderHolidayChart() {
-            const lang = document.getElementById('langSelect').value;
-            const year = parseInt(document.getElementById('yearSelect').value);
-            document.getElementById('chartYearBadge').innerText = convertNum(year, lang);
-
-            const dict = i18n[lang] || i18n.bn;
-            const listContainer = document.getElementById('holidayList');
-            listContainer.innerHTML = '';
-
-            Object.keys(dict.holidays).sort().forEach(dateKey => {
-                const [mm, dd] = dateKey.split('-').map(Number);
-                const monthName = dict.months[mm - 1];
-                const holidayName = dict.holidays[dateKey];
-
-                const item = document.createElement('div');
-                item.className = 'holiday-item national';
-                item.innerHTML = `
-                    <div>
-                        <div class="name-str">${holidayName}</div>
-                        <div class="date-str">${convertNum(dd, lang)} ${monthName}, ${convertNum(year, lang)}</div>
-                    </div>
-                    <span style="font-size: 10px; padding: 2px 6px; background: rgba(255,123,114,0.2); color: var(--holiday-red); border-radius: 4px;">${dict.nationalTag}</span>
-                `;
-                listContainer.appendChild(item);
-            });
-        }
-
-        updateStaticUI();
-        populateMonths();
-        renderCalendar();
     </script>
 </body>
-  
 </html>
