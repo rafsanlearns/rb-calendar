@@ -26,13 +26,13 @@
             min-height: 100vh;
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
         .glass-card {
-            background: rgba(30, 41, 59, 0.4);
+            background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -42,53 +42,53 @@
         }
     </style>
 </head>
-<body class="p-3 md:p-8 flex flex-col items-center justify-center min-h-screen">
+<body class="p-2 sm:p-6 flex flex-col items-center justify-center min-h-screen">
 
     <!-- Header Section -->
-    <header class="w-full max-w-4xl flex items-center justify-between mb-6 glass-panel p-4 rounded-2xl">
+    <header class="w-full max-w-4xl flex items-center justify-between mb-4 glass-panel p-4 rounded-2xl">
         <div class="flex items-center gap-3">
-            <div class="text-4xl filter drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">🌙</div>
+            <div class="text-3xl sm:text-4xl filter drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">🌙</div>
             <div>
-                <h1 class="text-3xl font-black tracking-wider text-amberCustom">RB</h1>
-                <p class="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">Universal Calendar • By Rafsan</p>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-wider text-amberCustom">RB</h1>
+                <p class="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">UNIVERSAL CALENDAR • BY RAFSAN</p>
             </div>
         </div>
         <div id="liveClock" class="text-right hidden sm:block">
             <div class="text-xs font-semibold text-slate-400" id="currentDateText">--</div>
-            <div class="text-lg font-bold text-amberCustom" id="currentTimeText">--</div>
+            <div class="text-base font-bold text-amberCustom" id="currentTimeText">--</div>
         </div>
     </header>
 
     <!-- Main Calendar -->
-    <main class="w-full max-w-4xl glass-panel rounded-3xl p-4 md:p-6">
+    <main class="w-full max-w-4xl glass-panel rounded-3xl p-3 sm:p-6">
         
         <!-- Controls -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            <div class="flex items-center gap-3">
-                <button onclick="prevMonth()" class="w-10 h-10 flex items-center justify-center bg-slate-800 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700 font-bold transition">❮</button>
-                <h2 id="monthYearText" class="text-2xl font-black min-w-[200px] text-center text-amberCustom">August 2026</h2>
-                <button onclick="nextMonth()" class="w-10 h-10 flex items-center justify-center bg-slate-800 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700 font-bold transition">❯</button>
+        <div class="flex items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2">
+                <button onclick="prevMonth()" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-slate-800 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700 font-bold transition text-sm">❮</button>
+                <h2 id="monthYearText" class="text-lg sm:text-2xl font-black min-w-[130px] sm:min-w-[200px] text-center text-amberCustom">August 2026</h2>
+                <button onclick="nextMonth()" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-slate-800 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700 font-bold transition text-sm">❯</button>
             </div>
             
-            <div class="flex items-center gap-3">
-                <button onclick="goToToday()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl border border-slate-700 transition">Today</button>
-                <select id="yearSelect" onchange="selectYear(this.value)" class="bg-slate-900 text-sm border border-slate-700 rounded-xl px-3 py-2 font-bold text-slate-200 outline-none focus:border-amberCustom">
+            <div class="flex items-center gap-2">
+                <button onclick="goToToday()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl border border-slate-700 transition">Today</button>
+                <select id="yearSelect" onchange="selectYear(this.value)" class="bg-slate-900 text-xs sm:text-sm border border-slate-700 rounded-xl px-2 py-1.5 font-bold text-slate-200 outline-none focus:border-amberCustom">
                 </select>
             </div>
         </div>
 
         <!-- Weekdays Header -->
-        <div class="calendar-grid gap-1.5 md:gap-2.5 mb-2 text-center text-xs font-bold text-slate-400">
+        <div class="calendar-grid gap-1 sm:gap-2 mb-2 text-center text-[10px] sm:text-xs font-bold text-slate-400">
             <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div class="text-rose-400">FRI</div><div>SAT</div>
         </div>
 
         <!-- Calendar Days Grid -->
-        <div id="daysGrid" class="calendar-grid gap-1.5 md:gap-2.5"></div>
+        <div id="daysGrid" class="calendar-grid gap-1 sm:gap-2"></div>
     </main>
 
     <script>
         let currentYear = 2026;
-        let currentMonth = 7; // August (0-indexed)
+        let currentMonth = 7;
 
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -134,34 +134,31 @@
 
             const today = new Date();
 
-            // Blank cells for previous month padding
             for (let i = 0; i < firstDay; i++) {
                 const empty = document.createElement('div');
-                empty.className = "min-h-[80px] rounded-xl glass-card opacity-20";
+                empty.className = "min-h-[65px] sm:min-h-[80px] rounded-xl glass-card opacity-20";
                 grid.appendChild(empty);
             }
 
-            // Render days
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayCard = document.createElement('div');
                 const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
                 
-                dayCard.className = `min-h-[80px] p-2.5 rounded-xl flex flex-col justify-between glass-card border transition ${
+                dayCard.className = `min-h-[68px] sm:min-h-[80px] p-1.5 sm:p-2.5 rounded-xl flex flex-col justify-between glass-card border transition ${
                     isToday ? 'border-amberCustom bg-amberCustom/10 shadow-[0_0_15px_rgba(251,191,36,0.2)]' : 'border-slate-800 hover:border-slate-700'
                 }`;
 
-                // Simplified Bengali & Hijri date representation logic
                 const bnDay = ((day + 16) % 30) || 30;
                 const hjDay = ((day + 12) % 29) || 29;
 
                 dayCard.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <span class="font-black text-base md:text-lg ${isToday ? 'text-amberCustom' : 'text-slate-100'}">${day}</span>
-                        ${isToday ? '<span class="text-[9px] bg-amberCustom text-slate-950 px-1.5 py-0.5 rounded-md font-bold uppercase">Today</span>' : ''}
+                    <div class="flex items-center justify-between leading-none">
+                        <span class="font-black text-sm sm:text-lg ${isToday ? 'text-amberCustom' : 'text-slate-100'}">${day}</span>
+                        ${isToday ? '<span class="text-[7px] sm:text-[9px] bg-amberCustom text-slate-950 px-1 py-0.5 rounded font-black">TODAY</span>' : ''}
                     </div>
-                    <div class="flex items-center justify-between text-[10px] font-semibold mt-2 pt-1 border-t border-slate-800/80">
-                        <span class="text-bnBlue">বাংলা: ${bnDay}</span>
-                        <span class="text-arGreen">হিজরী: ${hjDay}</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-[8px] sm:text-[10px] font-semibold pt-1 border-t border-slate-800/80 gap-0.5 leading-tight">
+                        <span class="text-bnBlue">বাংলা ${bnDay}</span>
+                        <span class="text-arGreen">হিজরী ${hjDay}</span>
                     </div>
                 `;
                 grid.appendChild(dayCard);
@@ -169,22 +166,12 @@
         }
 
         function prevMonth() {
-            if (currentMonth === 0) {
-                currentMonth = 11;
-                currentYear--;
-            } else {
-                currentMonth--;
-            }
+            if (currentMonth === 0) { currentMonth = 11; currentYear--; } else { currentMonth--; }
             renderCalendar();
         }
 
         function nextMonth() {
-            if (currentMonth === 11) {
-                currentMonth = 0;
-                currentYear++;
-            } else {
-                currentMonth++;
-            }
+            if (currentMonth === 11) { currentMonth = 0; currentYear++; } else { currentMonth++; }
             renderCalendar();
         }
 
