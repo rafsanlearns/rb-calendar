@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RB - Universal Calendar</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -43,164 +42,77 @@
         }
     </style>
 </head>
-<body class="p-3 md:p-8 flex flex-col items-center justify-center relative overflow-x-hidden">
+<body class="p-3 md:p-8 flex flex-col items-center justify-center min-h-screen">
 
-    <!-- Auth Header Section -->
-    <header class="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 glass-panel p-4 rounded-2xl">
+    <!-- Header Section -->
+    <header class="w-full max-w-4xl flex items-center justify-between mb-6 glass-panel p-4 rounded-2xl">
         <div class="flex items-center gap-3">
             <div class="text-4xl filter drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">🌙</div>
             <div>
                 <h1 class="text-3xl font-black tracking-wider text-amberCustom">RB</h1>
-                <p class="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">By Rafsan</p>
+                <p class="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">Universal Calendar • By Rafsan</p>
             </div>
         </div>
-
-        <!-- User Profile & Auth Controls -->
-        <div id="authControls" class="flex items-center gap-3">
-            <!-- Dynamic User Content Loaded via JS -->
-            <button onclick="toggleAuthModal()" class="px-4 py-2 bg-amberCustom text-slate-950 font-bold text-xs rounded-xl hover:bg-amber-400 transition">Login / Signup</button>
+        <div id="liveClock" class="text-right hidden sm:block">
+            <div class="text-xs font-semibold text-slate-400" id="currentDateText">--</div>
+            <div class="text-lg font-bold text-amberCustom" id="currentTimeText">--</div>
         </div>
     </header>
 
-    <!-- Main Calendar Container -->
-    <main class="w-full max-w-4xl glass-panel rounded-3xl p-4 md:p-6 relative">
+    <!-- Main Calendar -->
+    <main class="w-full max-w-4xl glass-panel rounded-3xl p-4 md:p-6">
+        
+        <!-- Controls -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <div class="flex items-center gap-3">
-                <button onclick="prevMonth()" class="w-9 h-9 flex items-center justify-center bg-slate-800/80 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700/50 font-bold">❮</button>
-                <h2 id="monthYearText" class="text-xl font-extrabold min-w-[180px] text-center">August 2026</h2>
-                <button onclick="nextMonth()" class="w-9 h-9 flex items-center justify-center bg-slate-800/80 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700/50 font-bold">❯</button>
+                <button onclick="prevMonth()" class="w-10 h-10 flex items-center justify-center bg-slate-800 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700 font-bold transition">❮</button>
+                <h2 id="monthYearText" class="text-2xl font-black min-w-[200px] text-center text-amberCustom">August 2026</h2>
+                <button onclick="nextMonth()" class="w-10 h-10 flex items-center justify-center bg-slate-800 hover:bg-amberCustom hover:text-slate-950 rounded-xl border border-slate-700 font-bold transition">❯</button>
             </div>
-            <select id="yearSelect" onchange="selectYear(this.value)" class="bg-slate-900/80 text-sm border border-slate-700/60 rounded-xl px-3 py-1.5 text-slate-200">
-            </select>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="goToToday()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl border border-slate-700 transition">Today</button>
+                <select id="yearSelect" onchange="selectYear(this.value)" class="bg-slate-900 text-sm border border-slate-700 rounded-xl px-3 py-2 font-bold text-slate-200 outline-none focus:border-amberCustom">
+                </select>
+            </div>
         </div>
 
+        <!-- Weekdays Header -->
+        <div class="calendar-grid gap-1.5 md:gap-2.5 mb-2 text-center text-xs font-bold text-slate-400">
+            <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div class="text-rose-400">FRI</div><div>SAT</div>
+        </div>
+
+        <!-- Calendar Days Grid -->
         <div id="daysGrid" class="calendar-grid gap-1.5 md:gap-2.5"></div>
     </main>
 
-    <!-- Auth Modal Popup -->
-    <div id="authModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="glass-panel p-6 rounded-2xl w-full max-w-md relative">
-            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-            <h3 class="text-xl font-bold mb-4 text-amberCustom text-center" id="modalTitle">Login to RB</h3>
-            
-            <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
-                <input type="email" id="authEmail" placeholder="Email Address" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-amberCustom">
-                <input type="password" id="authPassword" placeholder="Password" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-amberCustom">
-                <button type="submit" id="authSubmitBtn" class="w-full bg-amberCustom text-slate-950 font-bold py-3 rounded-xl hover:bg-amber-400 transition">Login</button>
-            </form>
-
-            <div class="my-4 text-center text-xs text-slate-400">OR</div>
-
-            <button onclick="handleGoogleLogin()" class="w-full bg-slate-800 border border-slate-700 text-white font-semibold py-2.5 rounded-xl hover:bg-slate-700 transition flex items-center justify-center gap-2 text-sm">
-                <span>🌐</span> Continue with Google
-            </button>
-
-            <p class="mt-4 text-xs text-center text-slate-400">
-                <span id="toggleText">Don't have an account?</span> 
-                <button onclick="toggleAuthMode()" class="text-amberCustom font-bold underline" id="toggleBtn">Sign Up</button>
-            </p>
-        </div>
-    </div>
-
-    <!-- Firebase Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            signInWithPopup, 
-            GoogleAuthProvider, 
-            onAuthStateChanged, 
-            signOut 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        // Replace with your Firebase Project Configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        let isSignUp = false;
-
-        // Auth State Listener
-        onAuthStateChanged(auth, (user) => {
-            const authControls = document.getElementById('authControls');
-            if (user) {
-                authControls.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs text-slate-300 font-medium">${user.displayName || user.email}</span>
-                        <button id="logoutBtn" class="px-3 py-1.5 bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold rounded-xl hover:bg-red-500/30 transition">Logout</button>
-                    </div>
-                `;
-                document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
-                toggleAuthModal(false);
-            } else {
-                authControls.innerHTML = `
-                    <button onclick="toggleAuthModal(true)" class="px-4 py-2 bg-amberCustom text-slate-950 font-bold text-xs rounded-xl hover:bg-amber-400 transition">Login / Signup</button>
-                `;
-            }
-        });
-
-        // Auth Functions
-        window.handleAuth = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
-
-            try {
-                if (isSignUp) {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                } else {
-                    await signInWithEmailAndPassword(auth, email, password);
-                }
-            } catch (error) {
-                alert(error.message);
-            }
-        };
-
-        window.handleGoogleLogin = async () => {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                alert(error.message);
-            }
-        };
-
-        window.toggleAuthModal = (show = true) => {
-            const modal = document.getElementById('authModal');
-            modal.classList.toggle('hidden', !show);
-        };
-
-        window.toggleAuthMode = () => {
-            isSignUp = !isSignUp;
-            document.getElementById('modalTitle').textContent = isSignUp ? "Create RB Account" : "Login to RB";
-            document.getElementById('authSubmitBtn').textContent = isSignUp ? "Sign Up" : "Login";
-            document.getElementById('toggleText').textContent = isSignUp ? "Already have an account?" : "Don't have an account?";
-            document.getElementById('toggleBtn').textContent = isSignUp ? "Login" : "Sign Up";
-        };
-    </script>
-
-    <!-- Calendar App Script -->
     <script>
-        let currentYear = new Date().getFullYear();
-        let currentMonth = new Date().getMonth();
+        let currentYear = 2026;
+        let currentMonth = 7; // August (0-indexed)
+
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         window.onload = () => {
+            const today = new Date();
+            currentYear = today.getFullYear();
+            currentMonth = today.getMonth();
+            
             populateYears();
             renderCalendar();
+            startClock();
         };
+
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('currentDateText').textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                document.getElementById('currentTimeText').textContent = now.toLocaleTimeString();
+            }, 1000);
+        }
 
         function populateYears() {
             const select = document.getElementById('yearSelect');
+            select.innerHTML = '';
             for (let y = 2014; y <= 2060; y++) {
                 const opt = document.createElement('option');
                 opt.value = y;
@@ -211,8 +123,8 @@
         }
 
         function renderCalendar() {
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('monthYearText').textContent = `${months[currentMonth]} ${currentYear}`;
+            document.getElementById('yearSelect').value = currentYear;
             
             const grid = document.getElementById('daysGrid');
             grid.innerHTML = '';
@@ -220,30 +132,71 @@
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-            for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+            const today = new Date();
 
+            // Blank cells for previous month padding
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = "min-h-[80px] rounded-xl glass-card opacity-20";
+                grid.appendChild(empty);
+            }
+
+            // Render days
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayCard = document.createElement('div');
-                dayCard.className = "min-h-[70px] p-2 rounded-xl text-left glass-card border border-slate-800";
-                dayCard.innerHTML = `<span class="font-bold text-sm text-slate-100">${day}</span>`;
+                const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+                
+                dayCard.className = `min-h-[80px] p-2.5 rounded-xl flex flex-col justify-between glass-card border transition ${
+                    isToday ? 'border-amberCustom bg-amberCustom/10 shadow-[0_0_15px_rgba(251,191,36,0.2)]' : 'border-slate-800 hover:border-slate-700'
+                }`;
+
+                // Simplified Bengali & Hijri date representation logic
+                const bnDay = ((day + 16) % 30) || 30;
+                const hjDay = ((day + 12) % 29) || 29;
+
+                dayCard.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-black text-base md:text-lg ${isToday ? 'text-amberCustom' : 'text-slate-100'}">${day}</span>
+                        ${isToday ? '<span class="text-[9px] bg-amberCustom text-slate-950 px-1.5 py-0.5 rounded-md font-bold uppercase">Today</span>' : ''}
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] font-semibold mt-2 pt-1 border-t border-slate-800/80">
+                        <span class="text-bnBlue">বাংলা: ${bnDay}</span>
+                        <span class="text-arGreen">হিজরী: ${hjDay}</span>
+                    </div>
+                `;
                 grid.appendChild(dayCard);
             }
         }
 
         function prevMonth() {
-            if (currentMonth === 0) { currentMonth = 11; currentYear--; } else { currentMonth--; }
-            document.getElementById('yearSelect').value = currentYear;
+            if (currentMonth === 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
             renderCalendar();
         }
 
         function nextMonth() {
-            if (currentMonth === 11) { currentMonth = 0; currentYear++; } else { currentMonth++; }
-            document.getElementById('yearSelect').value = currentYear;
+            if (currentMonth === 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
             renderCalendar();
         }
 
         function selectYear(yr) {
             currentYear = parseInt(yr);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            const today = new Date();
+            currentYear = today.getFullYear();
+            currentMonth = today.getMonth();
             renderCalendar();
         }
     </script>
